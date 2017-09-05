@@ -5,4 +5,5 @@ class ShapeFactory
 {
 public:
 	static Shapedata MakeTriangle();
+	static Shapedata MakeCube();
 };
