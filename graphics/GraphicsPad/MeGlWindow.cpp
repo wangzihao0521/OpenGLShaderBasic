@@ -16,26 +16,8 @@ void MeGlWindow::senddatatoOpenGL()
 
 	Shapedata renderShape = ShapeFactory::MakeTriangle();
 
-
-/*	GLfloat vertexPos[] = {
-		+0.0f,+0.0f,
-		+1.0f,+0.0f,+0.0f,
-		-1.0f,-1.0f,
-		+0.0f,+1.0f,+0.0f,
-		-1.0f,+1.0f,
-		+0.0f,+0.0f,+1.0f,
-		+1.0f,-1.0f,
-		+0.0f,+0.0f,+1.0f,
-		+1.0f,+1.0f,
-		+0.0f,+1.0f,+0.0f,
-	};
-*/
 	GLuint BufferID;
 
-/*	GLushort indices[] = {
-		0,1,2,
-		0,3,4
-	};*/
 	glGenBuffers(1, &BufferID);
 	glBindBuffer(GL_ARRAY_BUFFER, BufferID);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferID);
