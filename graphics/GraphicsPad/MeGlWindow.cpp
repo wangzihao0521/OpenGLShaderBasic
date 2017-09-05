@@ -1,14 +1,23 @@
 #include <gl\glew.h>
 #include <MeGlWindow.h>
+#include <Vertex.h>
+#include <ShapeFactory.h>
 
 static GLuint	arraybufferoffset;
+static GLuint	numIndices;
 extern const char* vertexshader;
 extern const char* fragmentshader;
+
+
 
 void MeGlWindow::senddatatoOpenGL()
 {
 	glClearColor(0, 0, 0, 1);
-	GLfloat vertexPos[] = {
+
+	Shapedata renderShape = ShapeFactory::MakeTriangle();
+
+
+/*	GLfloat vertexPos[] = {
 		+0.0f,+0.0f,
 		+1.0f,+0.0f,+0.0f,
 		-1.0f,-1.0f,
@@ -20,26 +29,27 @@ void MeGlWindow::senddatatoOpenGL()
 		+1.0f,+1.0f,
 		+0.0f,+1.0f,+0.0f,
 	};
-
+*/
 	GLuint BufferID;
 
-	GLushort indices[] = {
+/*	GLushort indices[] = {
 		0,1,2,
 		0,3,4
-	};
+	};*/
 	glGenBuffers(1, &BufferID);
 	glBindBuffer(GL_ARRAY_BUFFER, BufferID);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferID);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertexPos) + sizeof(indices), 0, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, renderShape.VertexBufferSize()+renderShape.IndicesBufferSize(), 0, GL_STATIC_DRAW);
 
-	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertexPos), vertexPos);
-	arraybufferoffset = sizeof(vertexPos);
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, sizeof(vertexPos), sizeof(indices), indices);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, renderShape.VertexBufferSize(), renderShape.vertices);
+	arraybufferoffset = renderShape.VertexBufferSize();
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, renderShape.VertexBufferSize(), renderShape.IndicesBufferSize(), renderShape.Indices);
+	numIndices = renderShape.numIndices;
 
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), 0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(2 * sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
 }
 
 void MeGlWindow::installshaders()
@@ -74,5 +84,5 @@ void MeGlWindow::paintGL()
 {
 
 	glViewport(0,0,width(),height());
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, (void*)(arraybufferoffset));
+	glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_SHORT, (void*)(arraybufferoffset));
 }
