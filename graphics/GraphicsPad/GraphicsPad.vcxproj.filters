@@ -5,11 +5,13 @@
     <ClCompile Include="MeGlWindow.cpp" />
     <ClCompile Include="ShaderCode.cpp" />
     <ClCompile Include="ShapeFactory.cpp" />
+    <ClCompile Include="Camera.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MeGlWindow.h" />
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="ShapeData.h" />
     <ClInclude Include="ShapeFactory.h" />
+    <ClInclude Include="Camera.h" />
   </ItemGroup>
 </Project>

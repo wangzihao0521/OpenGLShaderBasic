@@ -4,6 +4,8 @@
 #include <ShapeFactory.h>
 #include <glm\gtc\matrix_transform.hpp>
 #include <glm\glm.hpp>
+#include <QtGui\qkeyevent>
+#include <Camera.h>
 
 
 static GLuint	arraybufferoffset;
@@ -13,7 +15,7 @@ extern const char* fragmentshader;
 
 GLuint programID;
 
-
+Camera camera;
 
 void MeGlWindow::senddatatoOpenGL()
 {
@@ -77,12 +79,40 @@ void MeGlWindow::paintGL()
 
 	glm::mat4 TransformMatrix = glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, -5.0f));
 	glm::mat4 RotationMatrix = glm::rotate(glm::mat4(), 45.0f, glm::vec3(1.0f, 1.0f, 0.0f));
+	glm::mat4 CameraMatrix = camera.getWorldToViewMatrix();
 	glm::mat4 projectionMatrix = glm::perspective(60.0f, ((float)width() / height()), 0.1f, 10.0f);
 
-	glm::mat4 FullTransformMatrix = projectionMatrix*  TransformMatrix * RotationMatrix;
+	glm::mat4 FullTransformMatrix = projectionMatrix * CameraMatrix * TransformMatrix * RotationMatrix;
 
 	GLuint FullTransformMatrixUniformLocaiton = glGetUniformLocation(programID, "FullTransformMatrix");
 	glUniformMatrix4fv(FullTransformMatrixUniformLocaiton, 1, GL_FALSE, &FullTransformMatrix[0][0]);
 
 	glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_SHORT, (void*)(arraybufferoffset));
+}
+
+void MeGlWindow::keyPressEvent(QKeyEvent* e)
+{
+	switch (e->key())
+	{
+	case Qt::Key::Key_W:
+		camera.move_forward();
+		break;
+	case Qt::Key::Key_S:
+		camera.move_backward();
+		break;
+	case Qt::Key::Key_A:
+		camera.move_leftward();
+		break;
+	case Qt::Key::Key_D:
+		camera.move_rightward();
+		break;
+	case Qt::Key::Key_R:
+		camera.move_upward();
+		break;
+	case Qt::Key::Key_F:
+		camera.move_downward();
+		break;
+
+	}
+	repaint();
 }
