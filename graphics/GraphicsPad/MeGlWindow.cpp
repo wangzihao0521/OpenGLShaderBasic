@@ -112,7 +112,18 @@ void MeGlWindow::keyPressEvent(QKeyEvent* e)
 	case Qt::Key::Key_F:
 		camera.move_downward();
 		break;
-
+	case Qt::Key::Key_Q:
+		camera.rotate_left();
+		break;
+	case Qt::Key::Key_E:
+		camera.rotate_right();
+		break;
+	case Qt::Key::Key_Z:
+		camera.rotate_up();
+		break;
+	case Qt::Key::Key_C:
+		camera.rotate_down();
+		break;
 	}
 	repaint();
 }

@@ -19,11 +19,16 @@ public:
 	void move_rightward();
 	void move_upward();
 	void move_downward();
+	void rotate_left();
+	void rotate_right();
+	void rotate_up();
+	void rotate_down();
 
 protected:
 	glm::vec3 Position;
 	glm::vec3 ViewDir;
 	const glm::vec3 UpDir;
 	static const float Movement_speed;
+	static const float Rotation_speed;
 	glm::vec3 TengentDir;
 };
