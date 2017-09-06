@@ -6,4 +6,5 @@ class ShapeFactory
 public:
 	static Shapedata MakeTriangle();
 	static Shapedata MakeCube();
+	static Shapedata MakePlane(GLuint Divisions = 10);
 };

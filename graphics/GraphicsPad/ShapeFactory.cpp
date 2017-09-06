@@ -6,6 +6,15 @@
 
 using glm::vec3;
 
+glm::vec3 randomColor()
+{
+	glm::vec3 ret;
+	ret.x = rand() / (float)RAND_MAX;
+	ret.y = rand() / (float)RAND_MAX;
+	ret.z = rand() / (float)RAND_MAX;
+	return ret;
+}
+
 Shapedata ShapeFactory::MakeTriangle()
 {
 	Shapedata data;
@@ -113,5 +122,45 @@ Shapedata ShapeFactory::MakeCube() {
 	data.Indices = new GLushort[data.numIndices];
 	memcpy(data.Indices, CubeIndices, sizeof(CubeIndices));
 
+	return data;
+}
+
+Shapedata ShapeFactory::MakePlane(GLuint Divisions)
+{
+	Shapedata data;
+
+	data.numVertices = Divisions * Divisions;
+	data.vertices = new Vertex[data.numVertices];
+	int half = Divisions / 2;
+	for (int i = 0; i < Divisions; ++i)
+	{
+		for (int j = 0; j < Divisions; ++j)
+		{
+			Vertex& vert = data.vertices[i*Divisions + j];
+			vert.position.x = j - half;
+			vert.position.y = 0;
+			vert.position.z = i - half;
+			vert.color = randomColor();
+		}
+	}
+
+	data.numIndices = (Divisions - 1) * (Divisions - 1) * 2 * 3;
+	data.Indices = new GLushort[data.numIndices];
+
+	int runner = 0;
+	for (int row = 0; row < Divisions - 1; row++)
+	{
+		for (int col = 0; col < Divisions - 1; col++)
+		{
+			data.Indices[runner++] = Divisions * row + col;
+			data.Indices[runner++] = Divisions * row + col + Divisions;
+			data.Indices[runner++] = Divisions * row + col + Divisions + 1;
+
+			data.Indices[runner++] = Divisions * row + col;
+			data.Indices[runner++] = Divisions * row + col + Divisions + 1;
+			data.Indices[runner++] = Divisions * row + col + 1;
+		}
+	}
+	assert(runner = data.numIndices);
 	return data;
 }
