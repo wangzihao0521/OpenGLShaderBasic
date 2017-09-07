@@ -11,6 +11,6 @@ uniform vec3 LightPosition;
 void main()
 {
 	vec3 lightVector = normalize(LightPosition - thePosition);
-	float brightness = dot(lightVector, VertexNormal);
+	float brightness = clamp(dot(lightVector, VertexNormal),0,1);
 	pixelcolor = vec4(vec3(brightness,brightness,brightness)+AmbientLightColor, 1.0);
 }

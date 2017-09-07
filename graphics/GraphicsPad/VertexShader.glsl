@@ -9,6 +9,7 @@ out vec3 VertexNormal;
 out vec3 thePosition;
 
 uniform mat4 FullTransformMatrix;
+uniform mat4 Model2WorldMatrix;
 uniform vec3 AmbientLight;
 
 void main()
@@ -16,6 +17,6 @@ void main()
 	gl_Position = FullTransformMatrix * vec4(Position, 1.0);
 	v2fcolor = Color;
 	AmbientLightColor = AmbientLight;
-	VertexNormal = normal;
+	VertexNormal = vec3 (transpose(inverse(Model2WorldMatrix)) * vec4(normal,0));
 	thePosition = Position;
 }

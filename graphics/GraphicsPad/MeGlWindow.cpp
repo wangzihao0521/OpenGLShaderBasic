@@ -20,6 +20,8 @@ GLuint programID;
 
 Camera camera;
 
+glm::vec3 LightPosition(0.0f, 3.0f, -3.0f);
+
 void MeGlWindow::senddatatoOpenGL()
 {
 	glClearColor(0, 0, 0, 1);
@@ -170,13 +172,17 @@ void MeGlWindow::paintGL()
 	glm::mat4 World2ProjectionMatrix = projectionMatrix * CameraMatrix ;
 
 	glm::mat4 FullTransformMatrix;
+	
 	GLuint FullTransformMatrixUniformLocaiton;
+	FullTransformMatrixUniformLocaiton = glGetUniformLocation(programID, "FullTransformMatrix");
+	GLuint Model2WorldMatrixUniformLocaiton;
+	Model2WorldMatrixUniformLocaiton = glGetUniformLocation(programID, "Model2WorldMatrix");
 	glm::mat4 TransformMatrix;
 	glm::mat4 RotationMatrix;
 	//Light Begins Here
 	glm::vec3 AmbientLight(0.2f, 0.2f, 0.2f);
 
-	glm::vec3 LightPosition(0.0f, 3.0f, -3.0f);
+	
 
 	GLuint AmbientLightUniformLocation = glGetUniformLocation(programID, "AmbientLight");
 	glUniform3fv(AmbientLightUniformLocation, 1, &AmbientLight[0]);
@@ -190,9 +196,11 @@ void MeGlWindow::paintGL()
 	RotationMatrix = glm::rotate(glm::mat4(), 45.0f, glm::vec3(1.0f, 1.0f, 0.0f));
 	
 	FullTransformMatrix = World2ProjectionMatrix * TransformMatrix * RotationMatrix;
+	glm::mat4 Cube1Model2WorldMatrix = TransformMatrix * RotationMatrix;
 
-	FullTransformMatrixUniformLocaiton = glGetUniformLocation(programID, "FullTransformMatrix");
+
 	glUniformMatrix4fv(FullTransformMatrixUniformLocaiton, 1, GL_FALSE, &FullTransformMatrix[0][0]);
+	glUniformMatrix4fv(Model2WorldMatrixUniformLocaiton, 1, GL_FALSE, &Cube1Model2WorldMatrix[0][0]);
 
 	glDrawElements(GL_TRIANGLES, CubenumIndices, GL_UNSIGNED_SHORT, (void*)(CubeElementArrayOffset));
 
@@ -201,8 +209,10 @@ void MeGlWindow::paintGL()
 	RotationMatrix = glm::rotate(glm::mat4(), 66.0f, glm::vec3(1.0f, -1.0f, 0.0f));
 
 	FullTransformMatrix = World2ProjectionMatrix * TransformMatrix * RotationMatrix;
+	glm::mat4 Cube2Model2WorldMatrix = TransformMatrix * RotationMatrix;
 
 	glUniformMatrix4fv(FullTransformMatrixUniformLocaiton, 1, GL_FALSE, &FullTransformMatrix[0][0]);
+	glUniformMatrix4fv(Model2WorldMatrixUniformLocaiton, 1, GL_FALSE, &Cube2Model2WorldMatrix[0][0]);
 
 	glDrawElements(GL_TRIANGLES, CubenumIndices, GL_UNSIGNED_SHORT, (void*)(CubeElementArrayOffset));
 
@@ -212,8 +222,10 @@ void MeGlWindow::paintGL()
 	RotationMatrix = glm::rotate(glm::mat4(), 0.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 
 	FullTransformMatrix = World2ProjectionMatrix * TransformMatrix * RotationMatrix;
+	glm::mat4 PlaneModel2WorldMatrix = TransformMatrix * RotationMatrix;
 
 	glUniformMatrix4fv(FullTransformMatrixUniformLocaiton, 1, GL_FALSE, &FullTransformMatrix[0][0]);
+	glUniformMatrix4fv(Model2WorldMatrixUniformLocaiton, 1, GL_FALSE, &PlaneModel2WorldMatrix[0][0]);
 
 	glDrawElements(GL_TRIANGLES, PlanenumIndices, GL_UNSIGNED_SHORT, (void*)(PlaneElementArrayOffset));
 }
@@ -252,6 +264,23 @@ void MeGlWindow::keyPressEvent(QKeyEvent* e)
 	case Qt::Key::Key_C:
 		camera.rotate_down();
 		break;
+	case Qt::Key::Key_I:
+		LightPosition += glm::vec3 (0,0,-0.2);
+		break;
+	case Qt::Key::Key_K:
+		LightPosition += glm::vec3(0, 0, 0.2);
+		break;
+	case Qt::Key::Key_J:
+		LightPosition += glm::vec3(-0.2, 0, -0.0);
+		break;
+	case Qt::Key::Key_L:
+		LightPosition += glm::vec3(0.2, 0, -0.0);
+		break;
+	case Qt::Key::Key_U:
+		LightPosition += glm::vec3(0, 0.2, -0.0);
+		break;
+	case Qt::Key::Key_O:
+		LightPosition += glm::vec3(0, -0.2, -0.0);
 	}
 	repaint();
 }
