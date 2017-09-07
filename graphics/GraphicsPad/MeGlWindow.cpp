@@ -6,6 +6,8 @@
 #include <glm\glm.hpp>
 #include <QtGui\qkeyevent>
 #include <Camera.h>
+#include <iostream>
+#include <fstream>
 
 static GLuint   CubeElementArrayOffset;
 static GLuint   PlaneElementArrayOffset;
@@ -13,8 +15,6 @@ static GLuint	CubenumIndices;
 static GLuint	PlanenumIndices;
 static GLuint	CubeObjectID;
 static GLuint	PlaneObjectID;
-extern const char* vertexshader;
-extern const char* fragmentshader;
 
 GLuint programID;
 
@@ -69,24 +69,82 @@ void MeGlWindow::senddatatoOpenGL()
 	Plane.cleanup();
 }
 
+bool checkStatus(
+	GLuint objectID,
+	PFNGLGETSHADERIVPROC objectPropertyGetterFunc,
+	PFNGLGETSHADERINFOLOGPROC getInfoLogFunc,
+	GLenum statusType)
+{
+	GLint status;
+	objectPropertyGetterFunc(objectID, statusType, &status);
+	if (status != GL_TRUE)
+	{
+		GLint infoLogLength;
+		objectPropertyGetterFunc(objectID, GL_INFO_LOG_LENGTH, &infoLogLength);
+		GLchar* buffer = new GLchar[infoLogLength];
+
+		GLsizei bufferSize;
+		getInfoLogFunc(objectID, infoLogLength, &bufferSize, buffer);
+		std::cout << buffer << std::endl;
+		delete[] buffer;
+		return false;
+	}
+	return true;
+}
+
+bool MeGlWindow::checkShaderStatus(GLuint shaderID)
+{
+	return checkStatus(shaderID, glGetShaderiv, glGetShaderInfoLog, GL_COMPILE_STATUS);
+}
+
+bool MeGlWindow::checkProgramStatus(GLuint programID)
+{
+	return checkStatus(programID, glGetProgramiv, glGetProgramInfoLog, GL_LINK_STATUS);
+}
+
+std::string MeGlWindow::ReadShaderCode(const char* fileName)
+{
+	std::ifstream meInput(fileName);
+	if (!meInput.good())
+	{
+		std::cout << "File failed to load..." << fileName;
+		exit(1);
+	}
+	return std::string(
+		std::istreambuf_iterator<char>(meInput),
+		std::istreambuf_iterator<char>());
+}
+
 void MeGlWindow::installshaders()
 {
 	GLuint VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
 	GLuint FragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 
-	//	const char* adapter[1];
-	//	adapter[0] = vertexshader;
-	glShaderSource(VertexShaderID, 1, &vertexshader, 0);
-	//	adapter[0] = fragmentshader;
-	glShaderSource(FragmentShaderID, 1, &fragmentshader, 0);
+	const GLchar* adapter[1];
+	std::string temp = ReadShaderCode("VertexShader.glsl");
+	adapter[0] = temp.c_str();
+	glShaderSource(VertexShaderID, 1, adapter, 0);
+	temp = ReadShaderCode("FragmentShader.glsl");
+	adapter[0] = temp.c_str();
+	glShaderSource(FragmentShaderID, 1, adapter, 0);
 
 	glCompileShader(VertexShaderID);
 	glCompileShader(FragmentShaderID);
+
+	if (!checkShaderStatus(VertexShaderID) || !checkShaderStatus(FragmentShaderID))
+		return;
 
 	programID = glCreateProgram();
 	glAttachShader(programID, VertexShaderID);
 	glAttachShader(programID, FragmentShaderID);
 	glLinkProgram(programID);
+
+	if (!checkProgramStatus(programID))
+		return;
+
+	glDeleteShader(VertexShaderID);
+	glDeleteShader(FragmentShaderID);
+
 	glUseProgram(programID);
 }
 
