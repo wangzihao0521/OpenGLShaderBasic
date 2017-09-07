@@ -16,5 +16,7 @@
   <ItemGroup>
     <None Include="VertexShader.glsl" />
     <None Include="FragmentShader.glsl" />
+    <None Include="CubeLightVertexShader.glsl" />
+    <None Include="CubeLightFragmentShader.glsl" />
   </ItemGroup>
 </Project>

@@ -17,10 +17,11 @@ static GLuint	CubeObjectID;
 static GLuint	PlaneObjectID;
 
 GLuint programID;
+GLuint LightProgramID;
 
 Camera camera;
 
-glm::vec3 LightPosition(0.0f, 3.0f, -3.0f);
+glm::vec3 LightPosition(0.0f, 2.5f, -5.0f);
 
 void MeGlWindow::senddatatoOpenGL()
 {
@@ -151,7 +152,31 @@ void MeGlWindow::installshaders()
 	glDeleteShader(VertexShaderID);
 	glDeleteShader(FragmentShaderID);
 
-	glUseProgram(programID);
+	VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
+	FragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+
+	temp = ReadShaderCode("CubeLightVertexShader.glsl");
+	adapter[0] = temp.c_str();
+	glShaderSource(VertexShaderID, 1, adapter, 0);
+	temp = ReadShaderCode("CubeLightFragmentShader.glsl");
+	adapter[0] = temp.c_str();
+	glShaderSource(FragmentShaderID, 1, adapter, 0);
+
+	glCompileShader(VertexShaderID);
+	glCompileShader(FragmentShaderID);
+
+	if (!checkShaderStatus(VertexShaderID) || !checkShaderStatus(FragmentShaderID))
+		return;
+
+	LightProgramID = glCreateProgram();
+	glAttachShader(LightProgramID, VertexShaderID);
+	glAttachShader(LightProgramID, FragmentShaderID);
+	glLinkProgram(LightProgramID);
+	if (!checkProgramStatus(LightProgramID))
+		return;
+
+	glDeleteShader(VertexShaderID);
+	glDeleteShader(FragmentShaderID);
 }
 
 void MeGlWindow::initializeGL()
@@ -166,6 +191,8 @@ void MeGlWindow::paintGL()
 {
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	glViewport(0,0,width(),height());
+
+	glUseProgram(programID);
 	glm::mat4 CameraMatrix = camera.getWorldToViewMatrix();
 	glm::mat4 projectionMatrix = glm::perspective(60.0f, ((float)width() / height()), 0.1f, 20.0f);
 
@@ -189,6 +216,8 @@ void MeGlWindow::paintGL()
 
 	GLuint LightPositionUniformLocation = glGetUniformLocation(programID, "LightPosition");
 	glUniform3fv(LightPositionUniformLocation, 1, &LightPosition[0]);
+
+
 
 	//Cube1
 	glBindVertexArray(CubeObjectID);
@@ -228,6 +257,19 @@ void MeGlWindow::paintGL()
 	glUniformMatrix4fv(Model2WorldMatrixUniformLocaiton, 1, GL_FALSE, &PlaneModel2WorldMatrix[0][0]);
 
 	glDrawElements(GL_TRIANGLES, PlanenumIndices, GL_UNSIGNED_SHORT, (void*)(PlaneElementArrayOffset));
+
+	//CubeLight
+	glUseProgram(LightProgramID);
+	glBindVertexArray(CubeObjectID);
+	TransformMatrix = glm::translate(glm::mat4(),LightPosition);
+	RotationMatrix = glm::rotate(glm::mat4(), 0.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+	glm::mat4 ScaleMatrix = glm::scale(glm::mat4(), glm::vec3(0.08f, 0.08f, 0.08f));
+
+	GLuint LightTransformMatrixUniformLocation = glGetUniformLocation(LightProgramID, "LightTransformMatrix");
+	FullTransformMatrix = World2ProjectionMatrix  *  TransformMatrix * ScaleMatrix * RotationMatrix;
+	glUniformMatrix4fv(LightTransformMatrixUniformLocation, 1, GL_FALSE, &FullTransformMatrix[0][0]);
+
+	glDrawElements(GL_TRIANGLES, CubenumIndices, GL_UNSIGNED_SHORT, (void*)CubeElementArrayOffset);
 }
 
 void MeGlWindow::keyPressEvent(QKeyEvent* e)
