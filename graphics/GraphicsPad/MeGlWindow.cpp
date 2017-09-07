@@ -52,17 +52,21 @@ void MeGlWindow::senddatatoOpenGL()
 	glBindVertexArray(CubeObjectID);
 	glBindBuffer(GL_ARRAY_BUFFER, BufferID);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), 0);
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(6 * sizeof(float)));
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferID);
 
 	glBindVertexArray(PlaneObjectID);
 	glBindBuffer(GL_ARRAY_BUFFER, BufferID);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(Cube.VertexBufferSize()+Cube.IndicesBufferSize()));
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(Cube.VertexBufferSize()+Cube.IndicesBufferSize()));
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)+ Cube.VertexBufferSize() + Cube.IndicesBufferSize()));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(3 * sizeof(float) + Cube.VertexBufferSize() + Cube.IndicesBufferSize()));
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(6 * sizeof(float) + Cube.VertexBufferSize() + Cube.IndicesBufferSize()));
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferID);
 
 	Cube.cleanup();
@@ -169,7 +173,16 @@ void MeGlWindow::paintGL()
 	GLuint FullTransformMatrixUniformLocaiton;
 	glm::mat4 TransformMatrix;
 	glm::mat4 RotationMatrix;
+	//Light Begins Here
+	glm::vec3 AmbientLight(0.2f, 0.2f, 0.2f);
 
+	glm::vec3 LightPosition(0.0f, 3.0f, -3.0f);
+
+	GLuint AmbientLightUniformLocation = glGetUniformLocation(programID, "AmbientLight");
+	glUniform3fv(AmbientLightUniformLocation, 1, &AmbientLight[0]);
+
+	GLuint LightPositionUniformLocation = glGetUniformLocation(programID, "LightPosition");
+	glUniform3fv(LightPositionUniformLocation, 1, &LightPosition[0]);
 
 	//Cube1
 	glBindVertexArray(CubeObjectID);
