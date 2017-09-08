@@ -12,6 +12,10 @@ public:
 	{}
 
 	glm::mat4 getWorldToViewMatrix() const;
+	glm::vec3 getPosition() const
+	{
+		return Position;
+	}
 
 	void move_forward();
 	void move_backward();

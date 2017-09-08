@@ -217,6 +217,9 @@ void MeGlWindow::paintGL()
 	GLuint LightPositionUniformLocation = glGetUniformLocation(programID, "LightPosition");
 	glUniform3fv(LightPositionUniformLocation, 1, &LightPosition[0]);
 
+	GLuint ViewPositionUniformLocation = glGetUniformLocation(programID, "ViewPosition");
+	glUniform3fv(ViewPositionUniformLocation, 1, &camera.getPosition()[0]);
+
 
 
 	//Cube1
