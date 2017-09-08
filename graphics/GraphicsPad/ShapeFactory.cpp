@@ -5,6 +5,7 @@
 #define NUM_ELEMENT(x) sizeof(x)/sizeof(*x)
 
 using glm::vec3;
+using glm::vec2;
 
 glm::vec3 randomColor()
 {
@@ -23,12 +24,18 @@ Shapedata ShapeFactory::MakeTriangle()
 	{
 		glm::vec3(+0.0f,+1.0f,+0.0f),
 		glm::vec3(+1.0f,+0.0f,+0.0f),
+		glm::vec3(+0.0f,+0.0f,+1.0f),
+		glm::vec2(+0.0f,+0.0f),
 
 		glm::vec3(-1.0f,-1.0f,+0.0f),
 		glm::vec3(+0.0f,+1.0f,+0.0f),
+		glm::vec3(+0.0f,+0.0f,+1.0f),
+		glm::vec2(+0.5f,+1.0f),
 
 		glm::vec3(+1.0f,-1.0f,+0.0f),
-		glm::vec3(+0.0f,+0.0f,+1.0f)
+		glm::vec3(+0.0f,+0.0f,+1.0f),
+		glm::vec3(+0.0f,+0.0f,+1.0f),
+		glm::vec2(+1.0f,+0.0f),
 	};
 
 	data.numVertices = NUM_ELEMENT(Triangle);
@@ -54,80 +61,104 @@ Shapedata ShapeFactory::MakeCube() {
 		vec3(-1.0f, +1.0f, +1.0f), // 0
 		vec3(+1.0f, +0.0f, +0.0f), // Color
 		vec3(+0.0f, +1.0f, +0.0f), // normal
+		vec2(+0.0f, +0.0f),		   //uv
 		vec3(+1.0f, +1.0f, +1.0f), // 1
 		vec3(+0.0f, +1.0f, +0.0f), // Color
 		vec3(+0.0f, +1.0f, +0.0f), // normal
+		vec2(+0.0f, +1.0f),		   //uv
 		vec3(+1.0f, +1.0f, -1.0f), // 2
 		vec3(+0.0f, +0.0f, +1.0f), // Color
 		vec3(+0.0f, +1.0f, +0.0f), // normal
+		vec2(+1.0f, +1.0f),		   //uv
 		vec3(-1.0f, +1.0f, -1.0f), // 3
 		vec3(+1.0f, +1.0f, +1.0f), // Color
 		vec3(+0.0f, +1.0f, +0.0f), // normal
+		vec2(+1.0f, +0.0f),		   //uv
 
 		vec3(-1.0f, +1.0f, -1.0f), // 4
 		vec3(+1.0f, +0.0f, +1.0f), // Color
 		vec3(+0.0f, +0.0f, -1.0f), // normal
+		vec2(+0.0f, +0.0f),		   //uv
 		vec3(+1.0f, +1.0f, -1.0f), // 5
 		vec3(+0.0f, +0.5f, +0.2f), // Color
 		vec3(+0.0f, +0.0f, -1.0f), // normal
+		vec2(+0.0f, +1.0f),		   //uv
 		vec3(+1.0f, -1.0f, -1.0f), // 6
 		vec3(+0.8f, +0.6f, +0.4f), // Color
 		vec3(+0.0f, +0.0f, -1.0f), // normal
+		vec2(+1.0f, +1.0f),		   //uv
 		vec3(-1.0f, -1.0f, -1.0f), // 7
 		vec3(+0.3f, +1.0f, +0.5f), // Color
 		vec3(+0.0f, +0.0f, -1.0f), // normal
+		vec2(+1.0f, +0.0f),		   //uv
 
 		vec3(+1.0f, +1.0f, -1.0f), // 8
 		vec3(+0.2f, +0.5f, +0.2f), // Color
 		vec3(+1.0f, +0.0f, -0.0f), // normal
+		vec2(+0.0f, +0.0f),		   //uv
 		vec3(+1.0f, +1.0f, +1.0f), // 9
 		vec3(+0.9f, +0.3f, +0.7f), // Color
 		vec3(+1.0f, +0.0f, -0.0f), // normal
+		vec2(+0.0f, +1.0f),		   //uv
 		vec3(+1.0f, -1.0f, +1.0f), // 10
 		vec3(+0.3f, +0.7f, +0.5f), // Color
 		vec3(+1.0f, +0.0f, -0.0f), // normal
+		vec2(+1.0f, +1.0f),		   //uv
 		vec3(+1.0f, -1.0f, -1.0f), // 11
 		vec3(+0.5f, +0.7f, +0.5f), // Color
 		vec3(+1.0f, +0.0f, -0.0f), // normal
+		vec2(+1.0f, +0.0f),		   //uv
 
 		vec3(-1.0f, +1.0f, +1.0f), // 12
 		vec3(+0.7f, +0.8f, +0.2f), // Color
 		vec3(-1.0f, +0.0f, -0.0f), // normal
+		vec2(+0.0f, +0.0f),		   //uv
 		vec3(-1.0f, +1.0f, -1.0f), // 13
 		vec3(+0.5f, +0.7f, +0.3f), // Color
 		vec3(-1.0f, +0.0f, -0.0f), // normal
+		vec2(+0.0f, +1.0f),		   //uv
 		vec3(-1.0f, -1.0f, -1.0f), // 14
 		vec3(+0.4f, +0.7f, +0.7f), // Color
 		vec3(-1.0f, +0.0f, -0.0f), // normal
+		vec2(+1.0f, +1.0f),		   //uv
 		vec3(-1.0f, -1.0f, +1.0f), // 15
 		vec3(+0.2f, +0.5f, +1.0f), // Color
 		vec3(-1.0f, +0.0f, -0.0f), // normal
+		vec2(+1.0f, +0.0f),		   //uv
 
 		vec3(+1.0f, +1.0f, +1.0f), // 16
 		vec3(+0.6f, +1.0f, +0.7f), // Color
 		vec3(-0.0f, +0.0f, +1.0f), // normal
+		vec2(+0.0f, +0.0f),		   //uv
 		vec3(-1.0f, +1.0f, +1.0f), // 17
 		vec3(+0.6f, +0.4f, +0.8f), // Color
 		vec3(-0.0f, +0.0f, +1.0f), // normal
+		vec2(+0.0f, +1.0f),		   //uv
 		vec3(-1.0f, -1.0f, +1.0f), // 18
 		vec3(+0.2f, +0.8f, +0.7f), // Color
 		vec3(-0.0f, +0.0f, +1.0f), // normal
+		vec2(+1.0f, +1.0f),		   //uv
 		vec3(+1.0f, -1.0f, +1.0f), // 19
 		vec3(+0.2f, +0.7f, +1.0f), // Color
 		vec3(-0.0f, +0.0f, +1.0f), // normal
+		vec2(+1.0f, +0.0f),		   //uv
 
 		vec3(+1.0f, -1.0f, -1.0f), // 20
 		vec3(+0.8f, +0.3f, +0.7f), // Color
 		vec3(-0.0f, -1.0f, +0.0f), // normal
+		vec2(+0.0f, +0.0f),		   //uv
 		vec3(-1.0f, -1.0f, -1.0f), // 21
 		vec3(+0.8f, +0.9f, +0.5f), // Color
 		vec3(-0.0f, -1.0f, +0.0f), // normal
+		vec2(+0.0f, +1.0f),		   //uv
 		vec3(-1.0f, -1.0f, +1.0f), // 22
 		vec3(+0.5f, +0.8f, +0.5f), // Color
 		vec3(-0.0f, -1.0f, +0.0f), // normal
+		vec2(+1.0f, +1.0f),		   //uv
 		vec3(+1.0f, -1.0f, +1.0f), // 23
 		vec3(+0.9f, +1.0f, +0.2f), // Color
 		vec3(-0.0f, -1.0f, +0.0f), // normal
+		vec2(+1.0f, +0.0f),		   //uv
 	};
 
 	data.numVertices = NUM_ELEMENT(CubeVerts);
@@ -166,6 +197,8 @@ Shapedata ShapeFactory::MakePlane(GLuint Divisions)
 			vert.position.z = i - half;
 			vert.color = randomColor();
 			vert.normal = vec3(0.0f, 1.0f, 0.0f);
+			vert.uv.x = ((float)j) / ((float)(Divisions-1));
+			vert.uv.y = ((float)i) / ((float)(Divisions-1));
 		}
 	}
 

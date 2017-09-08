@@ -55,22 +55,42 @@ void MeGlWindow::senddatatoOpenGL()
 	glBindVertexArray(CubeObjectID);
 	glBindBuffer(GL_ARRAY_BUFFER, BufferID);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), 0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 11 * sizeof(float), 0);
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 11 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(6 * sizeof(float)));
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 11 * sizeof(float), (void*)(6 * sizeof(float)));
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 11 * sizeof(float), (void*)(9 * sizeof(float)));
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferID);
 
 	glBindVertexArray(PlaneObjectID);
 	glBindBuffer(GL_ARRAY_BUFFER, BufferID);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(Cube.VertexBufferSize()+Cube.IndicesBufferSize()));
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 11 * sizeof(float), (void*)(Cube.VertexBufferSize()+Cube.IndicesBufferSize()));
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(3 * sizeof(float) + Cube.VertexBufferSize() + Cube.IndicesBufferSize()));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 11 * sizeof(float), (void*)(3 * sizeof(float) + Cube.VertexBufferSize() + Cube.IndicesBufferSize()));
 	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(6 * sizeof(float) + Cube.VertexBufferSize() + Cube.IndicesBufferSize()));
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 11 * sizeof(float), (void*)(6 * sizeof(float) + Cube.VertexBufferSize() + Cube.IndicesBufferSize()));
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 11 * sizeof(float), (void*)(9 * sizeof(float) + Cube.VertexBufferSize() + Cube.IndicesBufferSize()));
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferID);
+
+	const char* texName = "MyTexture.png";
+	QImage texture = QGLWidget::convertToGLFormat(QImage(texName, "PNG"));
+
+	glActiveTexture(GL_TEXTURE0);
+
+	GLuint TextureBufferID;
+	glGenTextures(1, &TextureBufferID);
+	glBindTexture(GL_TEXTURE_2D, TextureBufferID);
+	//	int a = texture.height();
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture.width(), texture.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, texture.bits());
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	GLint TextureUniformLocation = glGetUniformLocation(programID, "MyTexture");
+	glUniform1i(TextureUniformLocation, 0);
 
 	Cube.cleanup();
 	Plane.cleanup();
@@ -183,8 +203,8 @@ void MeGlWindow::initializeGL()
 {
 	glewInit();
 	glEnable(GL_DEPTH_TEST);
-	senddatatoOpenGL();
 	installshaders();
+	senddatatoOpenGL();
 }
 
 void MeGlWindow::paintGL()
@@ -193,6 +213,7 @@ void MeGlWindow::paintGL()
 	glViewport(0,0,width(),height());
 
 	glUseProgram(programID);
+
 	glm::mat4 CameraMatrix = camera.getWorldToViewMatrix();
 	glm::mat4 projectionMatrix = glm::perspective(60.0f, ((float)width() / height()), 0.1f, 20.0f);
 
