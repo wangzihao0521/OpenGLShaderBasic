@@ -6,9 +6,12 @@ const char* vertexshader =
 "in layout(location = 1) vec3 Color;"
 "out vec3 v2fcolor;"
 ""
+"uniform mat3 FullMatrix;"
+""
 "void main()"
 "{"
-"	gl_Position = vec4(Position, 0.0, 1.0);"
+"   vec3 pos = FullMatrix * vec3(Position,1.0);"
+"	gl_Position = vec4(vec2(pos), 0.0, 1.0);"
 "	v2fcolor = Color;"
 "}";
 

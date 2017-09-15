@@ -2,11 +2,21 @@
 #include <MeGlWindow.h>
 #include <Vertex.h>
 #include <ShapeFactory.h>
+#include <glm\glm.hpp>
+#include <glm\gtx\transform.hpp>
+#include <QtGui\qkeyevent>
 
 static GLuint	arraybufferoffset;
 static GLuint	numIndices;
 extern const char* vertexshader;
 extern const char* fragmentshader;
+GLuint programID;
+glm::mat3 TransformMatrix = glm::mat3();
+glm::mat3 RotationMatrix = glm::mat3();
+GLfloat TransformX = 0.0f;
+GLfloat TransformY = 0.0f;
+GLfloat RotationAngle= 0.0f;
+const GLfloat TransformSpeed = 0.1;
 
 
 
@@ -48,7 +58,7 @@ void MeGlWindow::installshaders()
 	glCompileShader(VertexShaderID);
 	glCompileShader(FragmentShaderID);
 
-	GLuint programID = glCreateProgram();
+	programID = glCreateProgram();
 	glAttachShader(programID, VertexShaderID);
 	glAttachShader(programID, FragmentShaderID);
 	glLinkProgram(programID);
@@ -64,7 +74,42 @@ void MeGlWindow::initializeGL()
 
 void MeGlWindow::paintGL()
 {
-
+	glClear(GL_COLOR_BUFFER_BIT);
 	glViewport(0,0,width(),height());
+
+	TransformMatrix[2][0] = TransformX;
+	TransformMatrix[2][1] = TransformY;
+	RotationMatrix = glm::mat3(glm::rotate(RotationAngle, glm::vec3(0.0f, 0.0f, 1.0f)));
+	glm::mat3 FullMatrix = TransformMatrix * RotationMatrix;
+	GLint FullMatrixUniformLocation = glGetUniformLocation(programID, "FullMatrix");
+	glUniformMatrix3fv(FullMatrixUniformLocation,1,GL_FALSE,&FullMatrix[0][0]);
+
+
 	glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_SHORT, (void*)(arraybufferoffset));
+}
+
+void MeGlWindow::keyPressEvent(QKeyEvent* e)
+{
+	switch (e->key())
+	{
+	case Qt::Key::Key_W:
+		TransformY += TransformSpeed;
+		break;
+	case Qt::Key::Key_S:
+		TransformY += -TransformSpeed;
+		break;
+	case Qt::Key::Key_A:
+		TransformX += -TransformSpeed;
+		break;
+	case Qt::Key::Key_D:
+		TransformX += TransformSpeed;
+		break;
+	case Qt::Key::Key_Q:
+		RotationAngle += 5.0;
+		break;
+	case Qt::Key::Key_E:
+		RotationAngle += -5.0;
+		break;
+	}
+	repaint();
 }

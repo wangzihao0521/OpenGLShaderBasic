@@ -9,7 +9,7 @@ protected:
 	void paintGL();
 	void senddatatoOpenGL();
 	void installshaders();
-
+	void keyPressEvent(QKeyEvent* e);
 public:
 };
 
