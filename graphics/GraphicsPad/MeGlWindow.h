@@ -2,6 +2,7 @@
 #define ME_GL_WINDOW
 #include <QtOpenGL\qglwidget>
 #include <string>
+#include <Qt\qtimer.h>
 
 class MeGlWindow : public QGLWidget
 {
@@ -15,6 +16,7 @@ protected:
 	bool checkProgramStatus(GLuint ProgramID);
 	std::string ReadShaderCode(const char* file);
 
+	QTimer	*Mytimer;
 public:
 };
 

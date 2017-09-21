@@ -22,6 +22,7 @@ GLuint LightProgramID;
 Camera camera;
 
 glm::vec3 LightPosition(0.0f, 2.5f, -5.0f);
+float RotationAngle = 0.0f;
 
 void MeGlWindow::senddatatoOpenGL()
 {
@@ -219,6 +220,11 @@ void MeGlWindow::initializeGL()
 	glEnable(GL_DEPTH_TEST);
 	installshaders();
 	senddatatoOpenGL();
+	Mytimer = new QTimer(this);
+
+	connect(Mytimer, SIGNAL(timeout()), this, SLOT(update()));
+	Mytimer->setInterval(0);
+	Mytimer->start();
 }
 
 void MeGlWindow::paintGL()
@@ -265,7 +271,7 @@ void MeGlWindow::paintGL()
 	//Cube1
 	glBindVertexArray(CubeObjectID);
 	TransformMatrix = glm::translate(glm::mat4(), glm::vec3(+3.0f, 0.0f, -5.0f));
-	RotationMatrix = glm::rotate(glm::mat4(), 0.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+	RotationMatrix = glm::rotate(glm::mat4(), RotationAngle, glm::vec3(0.0f, 1.0f, 0.0f));
 	
 	FullTransformMatrix = World2ProjectionMatrix * TransformMatrix * RotationMatrix;
 	glm::mat4 Cube1Model2WorldMatrix = TransformMatrix * RotationMatrix;
@@ -313,6 +319,9 @@ void MeGlWindow::paintGL()
 	glUniformMatrix4fv(LightTransformMatrixUniformLocation, 1, GL_FALSE, &FullTransformMatrix[0][0]);
 
 	glDrawElements(GL_TRIANGLES, CubenumIndices, GL_UNSIGNED_SHORT, (void*)CubeElementArrayOffset);
+
+	RotationAngle += 5.0f;
+	if (RotationAngle > 360.0f) RotationAngle -= 360.0f;
 }
 
 void MeGlWindow::keyPressEvent(QKeyEvent* e)
