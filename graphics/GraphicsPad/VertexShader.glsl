@@ -11,6 +11,7 @@ out vec3 WorldPosition;
 out vec2 f_uv;
 out mat4 TengentToModelTransform;
 out mat4 M2WMatrix;
+out vec3 ObjectSpaceNormal;
 
 uniform mat4 FullTransformMatrix;
 uniform mat4 Model2WorldMatrix;
@@ -26,4 +27,5 @@ void main()
 	vec3 BiotengentVector = normalize(cross(normal,vec3(tengent)) * tengent.w);
 	TengentToModelTransform = mat4(vec4(vec3(tengent),0.0),vec4(BiotengentVector,0.0),vec4(normal,0.0),vec4(Position,1.0));
 	M2WMatrix = Model2WorldMatrix;
+	ObjectSpaceNormal = normal;
 }
