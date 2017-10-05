@@ -164,6 +164,8 @@
   <ItemGroup>
     <None Include="CubeLightFragmentShader.glsl" />
     <None Include="CubeLightVertexShader.glsl" />
+    <None Include="CubeMapFragmentShader.glsl" />
+    <None Include="CubeMapVertexShader.glsl" />
     <None Include="FragmentShader.glsl" />
     <None Include="VertexShader.glsl" />
   </ItemGroup>

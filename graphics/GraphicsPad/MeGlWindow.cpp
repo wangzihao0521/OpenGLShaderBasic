@@ -18,11 +18,14 @@ static GLuint	PlaneObjectID;
 
 GLuint programID;
 GLuint LightProgramID;
+GLuint CubeMapProgramID;
 
 Camera camera;
 
 glm::vec3 LightPosition(0.0f, 2.5f, -5.0f);
 float RotationAngle = 0.0f;
+
+const char* MeGlWindow::TexFile[] = { "right.png","left.png","top.png","bottom.png","back.png","front.png" };
 
 void MeGlWindow::senddatatoOpenGL()
 {
@@ -107,10 +110,26 @@ void MeGlWindow::senddatatoOpenGL()
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
+	LoadCubeMap();
+
 	Cube.cleanup();
 	Plane.cleanup();
 }
+void MeGlWindow::LoadCubeMap() {
+	glActiveTexture(GL_TEXTURE2);
+	GLuint CubeBufferID;
+	glGenTextures(1, &CubeBufferID);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, CubeBufferID);
+	
+	for (int i = 0; i < 6; ++i) {
+		QImage Texdata = QGLWidget::convertToGLFormat(QImage(TexFile[i], "PNG"));
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA, Texdata.width(), Texdata.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, Texdata.bits());
+		
+	}
+	glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
+}
 bool checkStatus(
 	GLuint objectID,
 	PFNGLGETSHADERIVPROC objectPropertyGetterFunc,
@@ -212,6 +231,32 @@ void MeGlWindow::installshaders()
 
 	glDeleteShader(VertexShaderID);
 	glDeleteShader(FragmentShaderID);
+
+	VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
+	FragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+
+	temp = ReadShaderCode("CubeMapVertexShader.glsl");
+	adapter[0] = temp.c_str();
+	glShaderSource(VertexShaderID, 1, adapter, 0);
+	temp = ReadShaderCode("CubeMapFragmentShader.glsl");
+	adapter[0] = temp.c_str();
+	glShaderSource(FragmentShaderID, 1, adapter, 0);
+
+	glCompileShader(VertexShaderID);
+	glCompileShader(FragmentShaderID);
+
+	if (!checkShaderStatus(VertexShaderID) || !checkShaderStatus(FragmentShaderID))
+		return;
+
+	CubeMapProgramID = glCreateProgram();
+	glAttachShader(CubeMapProgramID, VertexShaderID);
+	glAttachShader(CubeMapProgramID, FragmentShaderID);
+	glLinkProgram(CubeMapProgramID);
+	if (!checkProgramStatus(CubeMapProgramID))
+		return;
+
+	glDeleteShader(VertexShaderID);
+	glDeleteShader(FragmentShaderID);
 }
 
 void MeGlWindow::initializeGL()
@@ -240,7 +285,7 @@ void MeGlWindow::paintGL()
 	glUniform1i(NormalmapUniformLocation, 1);
 
 	glm::mat4 CameraMatrix = camera.getWorldToViewMatrix();
-	glm::mat4 projectionMatrix = glm::perspective(60.0f, ((float)width() / height()), 0.1f, 20.0f);
+	glm::mat4 projectionMatrix = glm::perspective(60.0f, ((float)width() / height()), 0.1f, 30.0f);
 
 	glm::mat4 World2ProjectionMatrix = projectionMatrix * CameraMatrix ;
 
@@ -322,6 +367,24 @@ void MeGlWindow::paintGL()
 
 	RotationAngle += 5.0f;
 	if (RotationAngle > 360.0f) RotationAngle -= 360.0f;
+
+	//CubeMap
+	glUseProgram(CubeMapProgramID);
+
+	GLint CubeMapUniformLocation = glGetUniformLocation(CubeMapProgramID, "CubeMap");
+	glUniform1i(CubeMapUniformLocation, 2);
+
+	glBindVertexArray(CubeObjectID);
+	ScaleMatrix = glm::scale(glm::mat4(), glm::vec3(10.0f, 10.0f, 10.0f));
+
+	GLuint SkyboxTransformMatrixUniformLocation = glGetUniformLocation(CubeMapProgramID, "SkyboxTransformMatrix");
+	CameraMatrix[3][0] = 0.0;
+	CameraMatrix[3][1] = 0.0;
+	CameraMatrix[3][2] = 0.0;
+	FullTransformMatrix = projectionMatrix * CameraMatrix * ScaleMatrix;
+	glUniformMatrix4fv(SkyboxTransformMatrixUniformLocation, 1, GL_FALSE, &FullTransformMatrix[0][0]);
+
+	glDrawElements(GL_TRIANGLES, CubenumIndices, GL_UNSIGNED_SHORT, (void*)CubeElementArrayOffset);
 }
 
 void MeGlWindow::keyPressEvent(QKeyEvent* e)

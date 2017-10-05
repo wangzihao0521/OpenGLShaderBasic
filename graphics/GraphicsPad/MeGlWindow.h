@@ -12,9 +12,11 @@ protected:
 	void senddatatoOpenGL();
 	void installshaders();
 	void keyPressEvent(QKeyEvent*);
+	void LoadCubeMap();
 	bool checkShaderStatus(GLuint ShaderID);
 	bool checkProgramStatus(GLuint ProgramID);
 	std::string ReadShaderCode(const char* file);
+	static const char* TexFile[];
 
 	QTimer	*Mytimer;
 public:
