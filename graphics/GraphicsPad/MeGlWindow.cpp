@@ -25,7 +25,7 @@ Camera camera;
 glm::vec3 LightPosition(0.0f, 2.5f, -5.0f);
 float RotationAngle = 0.0f;
 
-const char* MeGlWindow::TexFile[] = { "right.png","left.png","top.png","bottom.png","back.png","front.png" };
+const char* MeGlWindow::TexFile[] = { "right.png","left.png","bottom.png","top.png","back.png","front.png" };
 
 void MeGlWindow::senddatatoOpenGL()
 {
@@ -124,11 +124,11 @@ void MeGlWindow::LoadCubeMap() {
 	for (int i = 0; i < 6; ++i) {
 		QImage Texdata = QGLWidget::convertToGLFormat(QImage(TexFile[i], "PNG"));
 		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA, Texdata.width(), Texdata.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, Texdata.bits());
-		
 	}
-	glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
+	glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 }
 bool checkStatus(
 	GLuint objectID,
@@ -285,7 +285,7 @@ void MeGlWindow::paintGL()
 	glUniform1i(NormalmapUniformLocation, 1);
 
 	glm::mat4 CameraMatrix = camera.getWorldToViewMatrix();
-	glm::mat4 projectionMatrix = glm::perspective(60.0f, ((float)width() / height()), 0.1f, 30.0f);
+	glm::mat4 projectionMatrix = glm::perspective(60.0f, ((float)width() / height()), 0.1f, 100.0f);
 
 	glm::mat4 World2ProjectionMatrix = projectionMatrix * CameraMatrix ;
 
@@ -375,7 +375,7 @@ void MeGlWindow::paintGL()
 	glUniform1i(CubeMapUniformLocation, 2);
 
 	glBindVertexArray(CubeObjectID);
-	ScaleMatrix = glm::scale(glm::mat4(), glm::vec3(10.0f, 10.0f, 10.0f));
+	ScaleMatrix = glm::scale(glm::mat4(), glm::vec3(50.0f, 50.0f, 50.0f));
 
 	GLuint SkyboxTransformMatrixUniformLocation = glGetUniformLocation(CubeMapProgramID, "SkyboxTransformMatrix");
 	CameraMatrix[3][0] = 0.0;

@@ -13,5 +13,5 @@ uniform mat4 SkyboxTransformMatrix;
 void main()
 {
 	gl_Position = SkyboxTransformMatrix * vec4(Position,1.0);
-	Texcoord = Position;
+	Texcoord = -Position;
 }
