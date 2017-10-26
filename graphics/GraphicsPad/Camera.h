@@ -16,6 +16,9 @@ public:
 	{
 		return Position;
 	}
+	void setPosition(glm::vec3 NewPosition) {
+		Position = NewPosition;
+	}
 
 	void move_forward();
 	void move_backward();

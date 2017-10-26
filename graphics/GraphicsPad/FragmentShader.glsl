@@ -13,6 +13,7 @@ uniform vec3 LightPosition;
 uniform vec3 ViewPosition;
 uniform sampler2D MyTexture;
 uniform sampler2D NormalMap;
+uniform float AttenuationFactor;
 
 void main()
 {
@@ -23,6 +24,8 @@ void main()
 	vec3 ModelNormal = vec3(TengentToModelTransform * vec4(FixedNormalVector,0.0));
 
 	vec3 lightVector = normalize(LightPosition - WorldPosition);
+	float distance = length(LightPosition - WorldPosition);
+	float attenuation = 1 / (AttenuationFactor * pow(distance,2));
 	vec3 PreWorldNormal = vec3 (transpose(inverse(M2WMatrix)) * vec4(ObjectSpaceNormal,0));
 	vec3 ActualModelNormal = mix(ObjectSpaceNormal,ModelNormal,clamp(dot(lightVector, PreWorldNormal)*10000,0,1));
 	vec3 WorldNormal = vec3 (transpose(inverse(M2WMatrix)) * vec4(ActualModelNormal,0));
@@ -31,12 +34,12 @@ void main()
 
 	
 	float brightness = clamp(dot(lightVector, WorldNormal),0,1);
-	vec4 diffuseLight = brightness * texColor;
+	vec4 diffuseLight =  attenuation * brightness * texColor;
 
 	vec3 reflectionVec = reflect(-lightVector,WorldNormal);
 	vec3 viewdirection = normalize(ViewPosition - WorldPosition);
 	float specularIntensity = pow(dot(viewdirection, reflectionVec),50);
-	vec3 specularlight = specularIntensity * texColor.xyz;
+	vec3 specularlight = specularIntensity * vec3(1.0,0.0,0.0);
 
 	vec3 AmbientLight = AmbientLightColor * texColor.xyz;
 

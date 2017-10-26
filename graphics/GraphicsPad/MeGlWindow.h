@@ -3,6 +3,7 @@
 #include <QtOpenGL\qglwidget>
 #include <string>
 #include <Qt\qtimer.h>
+#include <Camera.h>
 
 class MeGlWindow : public QGLWidget
 {
@@ -13,6 +14,7 @@ protected:
 	void installshaders();
 	void keyPressEvent(QKeyEvent*);
 	void LoadCubeMap();
+	void DrawObjects(Camera & camera);
 	bool checkShaderStatus(GLuint ShaderID);
 	bool checkProgramStatus(GLuint ProgramID);
 	std::string ReadShaderCode(const char* file);

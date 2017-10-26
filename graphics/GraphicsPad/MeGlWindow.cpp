@@ -19,8 +19,16 @@ static GLuint	PlaneObjectID;
 GLuint programID;
 GLuint LightProgramID;
 GLuint CubeMapProgramID;
+GLuint TestProgramID;
 
-Camera camera;
+GLuint FrameBufferID;
+GLuint FrameTextureID;
+GLuint FrameDepthID;
+
+GLfloat AttenuationFactor = 0.08;
+
+Camera MainCamera;
+Camera LightCamera;
 
 glm::vec3 LightPosition(0.0f, 2.5f, -5.0f);
 float RotationAngle = 0.0f;
@@ -111,6 +119,28 @@ void MeGlWindow::senddatatoOpenGL()
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
 	LoadCubeMap();
+
+	glActiveTexture(GL_TEXTURE3);
+
+	glGenFramebuffers(1, &FrameBufferID);
+	glBindBuffer(GL_FRAMEBUFFER, FrameBufferID);
+	glDrawBuffer(GL_COLOR_ATTACHMENT0);
+	glDrawBuffer(GL_DEPTH_ATTACHMENT);
+
+	glGenTextures(1, &FrameTextureID);
+	glBindTexture(GL_TEXTURE_2D, FrameTextureID);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width(), height(), 0, GL_RGB, GL_FLOAT,NULL);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+//	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, FrameTextureID, 0);
+
+	glActiveTexture(GL_TEXTURE4);
+	glGenTextures(1, &FrameDepthID);
+	glBindTexture(GL_TEXTURE_2D, FrameDepthID);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width(), height(), 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+//	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, FrameDepthID, 0);
 
 	Cube.cleanup();
 	Plane.cleanup();
@@ -257,6 +287,32 @@ void MeGlWindow::installshaders()
 
 	glDeleteShader(VertexShaderID);
 	glDeleteShader(FragmentShaderID);
+
+	VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
+	FragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+
+	temp = ReadShaderCode("ShadowMapVertexShader.glsl");
+	adapter[0] = temp.c_str();
+	glShaderSource(VertexShaderID, 1, adapter, 0);
+	temp = ReadShaderCode("ShadowMapFragmentShader.glsl");
+	adapter[0] = temp.c_str();
+	glShaderSource(FragmentShaderID, 1, adapter, 0);
+
+	glCompileShader(VertexShaderID);
+	glCompileShader(FragmentShaderID);
+
+	if (!checkShaderStatus(VertexShaderID) || !checkShaderStatus(FragmentShaderID))
+		return;
+
+	TestProgramID = glCreateProgram();
+	glAttachShader(TestProgramID, VertexShaderID);
+	glAttachShader(TestProgramID, FragmentShaderID);
+	glLinkProgram(TestProgramID);
+	if (!checkProgramStatus(TestProgramID))
+		return;
+
+	glDeleteShader(VertexShaderID);
+	glDeleteShader(FragmentShaderID);
 }
 
 void MeGlWindow::initializeGL()
@@ -274,8 +330,54 @@ void MeGlWindow::initializeGL()
 
 void MeGlWindow::paintGL()
 {
+//	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+//	glViewport(0, 0, 320, 180);
+
+	glViewport(0, 0, width(), height());
+
+	//render to shadow map
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, FrameBufferID);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-	glViewport(0,0,width(),height());
+	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, FrameTextureID, 0);
+	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, FrameDepthID, 0);
+	GLuint status = glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER);
+	assert(status == GL_FRAMEBUFFER_COMPLETE);
+
+	LightCamera.setPosition(LightPosition);
+	DrawObjects(MainCamera);
+
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+	glViewport(0, 0, width(), height());
+	DrawObjects(MainCamera);	
+	glUseProgram(TestProgramID);
+
+	GLint TextureUniformLocation = glGetUniformLocation(TestProgramID, "MyTexture");
+	glUniform1i(TextureUniformLocation, 3);
+	glBindVertexArray(CubeObjectID);
+	glm::mat4 CameraMatrix = MainCamera.getWorldToViewMatrix();
+	glm::mat4 projectionMatrix = glm::perspective(60.0f, ((float)width() / height()), 0.1f, 100.0f);
+
+	glm::mat4 World2ProjectionMatrix = projectionMatrix * CameraMatrix;
+
+	glm::mat4 TransformMatrix = glm::translate(glm::mat4(), glm::vec3(0.0f,0.0f,-5.0f));
+	glm::mat4 RotationMatrix = glm::rotate(glm::mat4(), 0.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+	glm::mat4 ScaleMatrix = glm::scale(glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f));
+
+	GLuint FullTransformMatrixUniformLocation = glGetUniformLocation(TestProgramID, "FullTransformMatrix");
+	glm::mat4 FullTransformMatrix = World2ProjectionMatrix  *  TransformMatrix * ScaleMatrix * RotationMatrix;
+	glUniformMatrix4fv(FullTransformMatrixUniformLocation, 1, GL_FALSE, &FullTransformMatrix[0][0]);
+
+	glDrawElements(GL_TRIANGLES, CubenumIndices, GL_UNSIGNED_SHORT, (void*)CubeElementArrayOffset);
+}
+void MeGlWindow::DrawObjects(Camera & camera){
+
+	glm::mat4 CameraMatrix = camera.getWorldToViewMatrix();
+	glm::mat4 projectionMatrix = glm::perspective(60.0f, ((float)width() / height()), 0.1f, 100.0f);
+
+	glm::mat4 World2ProjectionMatrix = projectionMatrix * CameraMatrix;
+
+	glm::mat4 FullTransformMatrix;
 
 	glUseProgram(programID);
 
@@ -283,13 +385,6 @@ void MeGlWindow::paintGL()
 	glUniform1i(TextureUniformLocation, 0);
 	GLint NormalmapUniformLocation = glGetUniformLocation(programID, "NormalMap");
 	glUniform1i(NormalmapUniformLocation, 1);
-
-	glm::mat4 CameraMatrix = camera.getWorldToViewMatrix();
-	glm::mat4 projectionMatrix = glm::perspective(60.0f, ((float)width() / height()), 0.1f, 100.0f);
-
-	glm::mat4 World2ProjectionMatrix = projectionMatrix * CameraMatrix ;
-
-	glm::mat4 FullTransformMatrix;
 	
 	GLuint FullTransformMatrixUniformLocaiton;
 	FullTransformMatrixUniformLocaiton = glGetUniformLocation(programID, "FullTransformMatrix");
@@ -311,7 +406,8 @@ void MeGlWindow::paintGL()
 	GLuint ViewPositionUniformLocation = glGetUniformLocation(programID, "ViewPosition");
 	glUniform3fv(ViewPositionUniformLocation, 1, &camera.getPosition()[0]);
 
-
+	GLuint AttenuationUniformLocation = glGetUniformLocation(programID, "AttenuationFactor");
+	glUniform1f(AttenuationUniformLocation,AttenuationFactor);
 
 	//Cube1
 	glBindVertexArray(CubeObjectID);
@@ -392,34 +488,46 @@ void MeGlWindow::keyPressEvent(QKeyEvent* e)
 	switch (e->key())
 	{
 	case Qt::Key::Key_W:
-		camera.move_forward();
+		MainCamera.move_forward();
 		break;
 	case Qt::Key::Key_S:
-		camera.move_backward();
+		MainCamera.move_backward();
 		break;
 	case Qt::Key::Key_A:
-		camera.move_leftward();
+		MainCamera.move_leftward();
 		break;
 	case Qt::Key::Key_D:
-		camera.move_rightward();
+		MainCamera.move_rightward();
 		break;
 	case Qt::Key::Key_R:
-		camera.move_upward();
+		MainCamera.move_upward();
 		break;
 	case Qt::Key::Key_F:
-		camera.move_downward();
+		MainCamera.move_downward();
 		break;
 	case Qt::Key::Key_Q:
-		camera.rotate_left();
+		MainCamera.rotate_left();
 		break;
 	case Qt::Key::Key_E:
-		camera.rotate_right();
+		MainCamera.rotate_right();
 		break;
 	case Qt::Key::Key_Z:
-		camera.rotate_up();
+		MainCamera.rotate_up();
 		break;
 	case Qt::Key::Key_C:
-		camera.rotate_down();
+		MainCamera.rotate_down();
+		break;
+	case Qt::Key::Key_T:
+		LightCamera.rotate_left();
+		break;
+	case Qt::Key::Key_Y:
+		LightCamera.rotate_right();
+		break;
+	case Qt::Key::Key_G:
+		LightCamera.rotate_up();
+		break;
+	case Qt::Key::Key_H:
+		LightCamera.rotate_down();
 		break;
 	case Qt::Key::Key_I:
 		LightPosition += glm::vec3 (0,0,-0.2);
