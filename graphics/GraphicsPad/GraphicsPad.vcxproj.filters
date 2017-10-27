@@ -22,5 +22,7 @@
     <None Include="CubeMapVertexShader.glsl" />
     <None Include="ShadowMapVertexShader.glsl" />
     <None Include="ShadowMapFragmentShader.glsl" />
+    <None Include="PlaneShadowVertexShader.glsl" />
+    <None Include="PlaneShadowFragmentShader.glsl" />
   </ItemGroup>
 </Project>

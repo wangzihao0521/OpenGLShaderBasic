@@ -19,13 +19,14 @@ static GLuint	PlaneObjectID;
 GLuint programID;
 GLuint LightProgramID;
 GLuint CubeMapProgramID;
+GLuint PlaneShadowProgramID;
 GLuint TestProgramID;
 
 GLuint FrameBufferID;
 GLuint FrameTextureID;
 GLuint FrameDepthID;
 
-GLfloat AttenuationFactor = 0.08;
+GLfloat AttenuationFactor = 0.03;
 
 Camera MainCamera;
 Camera LightCamera;
@@ -313,6 +314,32 @@ void MeGlWindow::installshaders()
 
 	glDeleteShader(VertexShaderID);
 	glDeleteShader(FragmentShaderID);
+
+	VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
+	FragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+
+	temp = ReadShaderCode("PlaneShadowVertexShader.glsl");
+	adapter[0] = temp.c_str();
+	glShaderSource(VertexShaderID, 1, adapter, 0);
+	temp = ReadShaderCode("PlaneShadowFragmentShader.glsl");
+	adapter[0] = temp.c_str();
+	glShaderSource(FragmentShaderID, 1, adapter, 0);
+
+	glCompileShader(VertexShaderID);
+	glCompileShader(FragmentShaderID);
+
+	if (!checkShaderStatus(VertexShaderID) || !checkShaderStatus(FragmentShaderID))
+		return;
+
+	PlaneShadowProgramID = glCreateProgram();
+	glAttachShader(PlaneShadowProgramID, VertexShaderID);
+	glAttachShader(PlaneShadowProgramID, FragmentShaderID);
+	glLinkProgram(PlaneShadowProgramID);
+	if (!checkProgramStatus(PlaneShadowProgramID))
+		return;
+
+	glDeleteShader(VertexShaderID);
+	glDeleteShader(FragmentShaderID);
 }
 
 void MeGlWindow::initializeGL()
@@ -344,28 +371,164 @@ void MeGlWindow::paintGL()
 	assert(status == GL_FRAMEBUFFER_COMPLETE);
 
 	LightCamera.setPosition(LightPosition);
-	DrawObjects(MainCamera);
+	DrawObjects(LightCamera);
 
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	glViewport(0, 0, width(), height());
-	DrawObjects(MainCamera);	
-	glUseProgram(TestProgramID);
-
-	GLint TextureUniformLocation = glGetUniformLocation(TestProgramID, "MyTexture");
-	glUniform1i(TextureUniformLocation, 3);
-	glBindVertexArray(CubeObjectID);
 	glm::mat4 CameraMatrix = MainCamera.getWorldToViewMatrix();
-	glm::mat4 projectionMatrix = glm::perspective(60.0f, ((float)width() / height()), 0.1f, 100.0f);
+	glm::mat4 projectionMatrix = glm::perspective(60.0f, ((float)width() / height()), 0.3f, 100.0f);
 
 	glm::mat4 World2ProjectionMatrix = projectionMatrix * CameraMatrix;
 
-	glm::mat4 TransformMatrix = glm::translate(glm::mat4(), glm::vec3(0.0f,0.0f,-5.0f));
-	glm::mat4 RotationMatrix = glm::rotate(glm::mat4(), 0.0f, glm::vec3(1.0f, 0.0f, 0.0f));
-	glm::mat4 ScaleMatrix = glm::scale(glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f));
+	glm::mat4 FullTransformMatrix;
+
+	glUseProgram(programID);
+
+	GLint TextureUniformLocation = glGetUniformLocation(programID, "MyTexture");
+	glUniform1i(TextureUniformLocation, 0);
+	GLint NormalmapUniformLocation = glGetUniformLocation(programID, "NormalMap");
+	glUniform1i(NormalmapUniformLocation, 1);
+
+	GLuint FullTransformMatrixUniformLocaiton;
+	FullTransformMatrixUniformLocaiton = glGetUniformLocation(programID, "FullTransformMatrix");
+	GLuint Model2WorldMatrixUniformLocaiton;
+	Model2WorldMatrixUniformLocaiton = glGetUniformLocation(programID, "Model2WorldMatrix");
+	glm::mat4 TransformMatrix;
+	glm::mat4 RotationMatrix;
+	//Light Begins Here
+	glm::vec3 AmbientLight(0.2f, 0.2f, 0.2f);
+
+
+
+	GLuint AmbientLightUniformLocation = glGetUniformLocation(programID, "AmbientLight");
+	glUniform3fv(AmbientLightUniformLocation, 1, &AmbientLight[0]);
+
+	GLuint LightPositionUniformLocation = glGetUniformLocation(programID, "LightPosition");
+	glUniform3fv(LightPositionUniformLocation, 1, &LightPosition[0]);
+
+	GLuint ViewPositionUniformLocation = glGetUniformLocation(programID, "ViewPosition");
+	glUniform3fv(ViewPositionUniformLocation, 1, &MainCamera.getPosition()[0]);
+
+	GLuint AttenuationUniformLocation = glGetUniformLocation(programID, "AttenuationFactor");
+	glUniform1f(AttenuationUniformLocation, AttenuationFactor);
+
+	//Cube1
+	glBindVertexArray(CubeObjectID);
+	TransformMatrix = glm::translate(glm::mat4(), glm::vec3(+3.0f, 0.0f, -5.0f));
+	RotationMatrix = glm::rotate(glm::mat4(), RotationAngle, glm::vec3(0.0f, 1.0f, 0.0f));
+
+	FullTransformMatrix = World2ProjectionMatrix * TransformMatrix * RotationMatrix;
+	glm::mat4 Cube1Model2WorldMatrix = TransformMatrix * RotationMatrix;
+
+
+	glUniformMatrix4fv(FullTransformMatrixUniformLocaiton, 1, GL_FALSE, &FullTransformMatrix[0][0]);
+	glUniformMatrix4fv(Model2WorldMatrixUniformLocaiton, 1, GL_FALSE, &Cube1Model2WorldMatrix[0][0]);
+
+	glDrawElements(GL_TRIANGLES, CubenumIndices, GL_UNSIGNED_SHORT, (void*)(CubeElementArrayOffset));
+
+	//Cube2
+	TransformMatrix = glm::translate(glm::mat4(), glm::vec3(-3.0f, 0.0f, -5.0f));
+	RotationMatrix = glm::rotate(glm::mat4(), 66.0f, glm::vec3(1.0f, -1.0f, 0.0f));
+
+	FullTransformMatrix = World2ProjectionMatrix * TransformMatrix * RotationMatrix;
+	glm::mat4 Cube2Model2WorldMatrix = TransformMatrix * RotationMatrix;
+
+	glUniformMatrix4fv(FullTransformMatrixUniformLocaiton, 1, GL_FALSE, &FullTransformMatrix[0][0]);
+	glUniformMatrix4fv(Model2WorldMatrixUniformLocaiton, 1, GL_FALSE, &Cube2Model2WorldMatrix[0][0]);
+
+	glDrawElements(GL_TRIANGLES, CubenumIndices, GL_UNSIGNED_SHORT, (void*)(CubeElementArrayOffset));
+
+	//plane
+	glUseProgram(PlaneShadowProgramID);
+	glBindVertexArray(PlaneObjectID);
+
+	TextureUniformLocation = glGetUniformLocation(PlaneShadowProgramID, "MyTexture");
+	glUniform1i(TextureUniformLocation, 0);
+	NormalmapUniformLocation = glGetUniformLocation(PlaneShadowProgramID, "NormalMap");
+	glUniform1i(NormalmapUniformLocation, 1);
+
+	GLint ShadowMapUniformLocation = glGetUniformLocation(PlaneShadowProgramID, "ShadowMap");
+	glUniform1i(ShadowMapUniformLocation, 4);
+
+	glm::mat4 LightWorld2ProjectionMatrix = projectionMatrix * LightCamera.getWorldToViewMatrix();
+	GLint LightFullTransformMatrixUniformLocaiton = glGetUniformLocation(PlaneShadowProgramID, "LightFullTransformMatrix");
+	glUniformMatrix4fv(LightFullTransformMatrixUniformLocaiton, 1, GL_FALSE, &LightWorld2ProjectionMatrix[0][0]);
+
+	TransformMatrix = glm::translate(glm::mat4(), glm::vec3(-0.0f, -2.0f, -5.0f));
+	RotationMatrix = glm::rotate(glm::mat4(), 0.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+
+	FullTransformMatrix = World2ProjectionMatrix * TransformMatrix * RotationMatrix;
+	glm::mat4 PlaneModel2WorldMatrix = TransformMatrix * RotationMatrix;
+
+	AmbientLightUniformLocation = glGetUniformLocation(PlaneShadowProgramID, "AmbientLight");
+	glUniform3fv(AmbientLightUniformLocation, 1, &AmbientLight[0]);
+
+	LightPositionUniformLocation = glGetUniformLocation(PlaneShadowProgramID, "LightPosition");
+	glUniform3fv(LightPositionUniformLocation, 1, &LightPosition[0]);
+
+	ViewPositionUniformLocation = glGetUniformLocation(PlaneShadowProgramID, "ViewPosition");
+	glUniform3fv(ViewPositionUniformLocation, 1, &MainCamera.getPosition()[0]);
+
+	AttenuationUniformLocation = glGetUniformLocation(PlaneShadowProgramID, "AttenuationFactor");
+	glUniform1f(AttenuationUniformLocation, AttenuationFactor);
+	FullTransformMatrixUniformLocaiton = glGetUniformLocation(PlaneShadowProgramID, "FullTransformMatrix");
+	Model2WorldMatrixUniformLocaiton = glGetUniformLocation(PlaneShadowProgramID, "Model2WorldMatrix");
+	glUniformMatrix4fv(FullTransformMatrixUniformLocaiton, 1, GL_FALSE, &FullTransformMatrix[0][0]);
+	glUniformMatrix4fv(Model2WorldMatrixUniformLocaiton, 1, GL_FALSE, &PlaneModel2WorldMatrix[0][0]);
+
+	glDrawElements(GL_TRIANGLES, PlanenumIndices, GL_UNSIGNED_SHORT, (void*)(PlaneElementArrayOffset));
+
+	//CubeLight
+	glUseProgram(LightProgramID);
+	glBindVertexArray(CubeObjectID);
+	TransformMatrix = glm::translate(glm::mat4(), LightPosition);
+	RotationMatrix = glm::rotate(glm::mat4(), 0.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+	glm::mat4 ScaleMatrix = glm::scale(glm::mat4(), glm::vec3(0.08f, 0.08f, 0.08f));
+
+	GLuint LightTransformMatrixUniformLocation = glGetUniformLocation(LightProgramID, "LightTransformMatrix");
+	FullTransformMatrix = World2ProjectionMatrix  *  TransformMatrix * ScaleMatrix * RotationMatrix;
+	glUniformMatrix4fv(LightTransformMatrixUniformLocation, 1, GL_FALSE, &FullTransformMatrix[0][0]);
+
+	glDrawElements(GL_TRIANGLES, CubenumIndices, GL_UNSIGNED_SHORT, (void*)CubeElementArrayOffset);
+
+	RotationAngle += 5.0f;
+	if (RotationAngle > 360.0f) RotationAngle -= 360.0f;
+
+	//CubeMap
+	glUseProgram(CubeMapProgramID);
+
+	GLint CubeMapUniformLocation = glGetUniformLocation(CubeMapProgramID, "CubeMap");
+	glUniform1i(CubeMapUniformLocation, 2);
+
+	glBindVertexArray(CubeObjectID);
+	ScaleMatrix = glm::scale(glm::mat4(), glm::vec3(50.0f, 50.0f, 50.0f));
+
+	GLuint SkyboxTransformMatrixUniformLocation = glGetUniformLocation(CubeMapProgramID, "SkyboxTransformMatrix");
+	CameraMatrix[3][0] = 0.0;
+	CameraMatrix[3][1] = 0.0;
+	CameraMatrix[3][2] = 0.0;
+	FullTransformMatrix = projectionMatrix * CameraMatrix * ScaleMatrix;
+	glUniformMatrix4fv(SkyboxTransformMatrixUniformLocation, 1, GL_FALSE, &FullTransformMatrix[0][0]);
+
+	glDrawElements(GL_TRIANGLES, CubenumIndices, GL_UNSIGNED_SHORT, (void*)CubeElementArrayOffset);
+	
+	glUseProgram(TestProgramID);
+
+	TextureUniformLocation = glGetUniformLocation(TestProgramID, "MyTexture");
+	glUniform1i(TextureUniformLocation, 4);
+	glBindVertexArray(CubeObjectID);
+	CameraMatrix = MainCamera.getWorldToViewMatrix();
+	projectionMatrix = glm::perspective(60.0f, ((float)width() / height()), 0.1f, 100.0f);
+
+	World2ProjectionMatrix = projectionMatrix * CameraMatrix;
+
+	TransformMatrix = glm::translate(glm::mat4(), glm::vec3(0.0f,0.0f,-5.0f));
+	RotationMatrix = glm::rotate(glm::mat4(), 0.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+	ScaleMatrix = glm::scale(glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f));
 
 	GLuint FullTransformMatrixUniformLocation = glGetUniformLocation(TestProgramID, "FullTransformMatrix");
-	glm::mat4 FullTransformMatrix = World2ProjectionMatrix  *  TransformMatrix * ScaleMatrix * RotationMatrix;
+	FullTransformMatrix = World2ProjectionMatrix  *  TransformMatrix * ScaleMatrix * RotationMatrix;
 	glUniformMatrix4fv(FullTransformMatrixUniformLocation, 1, GL_FALSE, &FullTransformMatrix[0][0]);
 
 	glDrawElements(GL_TRIANGLES, CubenumIndices, GL_UNSIGNED_SHORT, (void*)CubeElementArrayOffset);
@@ -373,7 +536,7 @@ void MeGlWindow::paintGL()
 void MeGlWindow::DrawObjects(Camera & camera){
 
 	glm::mat4 CameraMatrix = camera.getWorldToViewMatrix();
-	glm::mat4 projectionMatrix = glm::perspective(60.0f, ((float)width() / height()), 0.1f, 100.0f);
+	glm::mat4 projectionMatrix = glm::perspective(60.0f, ((float)width() / height()), 0.3f, 100.0f);
 
 	glm::mat4 World2ProjectionMatrix = projectionMatrix * CameraMatrix;
 
