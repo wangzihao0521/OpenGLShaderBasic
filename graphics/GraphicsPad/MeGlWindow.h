@@ -1,9 +1,11 @@
 #ifndef ME_GL_WINDOW
 #define ME_GL_WINDOW
+#include "Renderer.h"
 #include <QtOpenGL\qglwidget>
 #include <string>
 #include <Qt\qtimer.h>
 #include <Camera.h>
+
 
 class MeGlWindow : public QGLWidget
 {
@@ -21,6 +23,8 @@ protected:
 	static const char* TexFile[];
 
 	QTimer	*Mytimer;
+	Renderer* MyRenderer;
+	Renderer* renderer() { return MyRenderer->getInstatnce(); }
 public:
 };
 

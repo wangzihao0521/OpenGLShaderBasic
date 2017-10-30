@@ -43,6 +43,10 @@ void MeGlWindow::senddatatoOpenGL()
 	Shapedata Cube = ShapeFactory::MakeCube();
 	Shapedata Plane = ShapeFactory::MakePlane();
 
+	Pass* pass = renderer()->AddPass();
+	pass->setObject(Cube,glm::vec3(0,0,-5));
+
+/*
 	GLuint BufferID;
 	GLuint	currentbufferoffset = 0;
 
@@ -66,7 +70,6 @@ void MeGlWindow::senddatatoOpenGL()
 	glGenVertexArrays(1, &PlaneObjectID);
 
 	glBindVertexArray(CubeObjectID);
-	glBindBuffer(GL_ARRAY_BUFFER, BufferID);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 15 * sizeof(float), 0);
 	glEnableVertexAttribArray(1);
@@ -80,7 +83,6 @@ void MeGlWindow::senddatatoOpenGL()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferID);
 
 	glBindVertexArray(PlaneObjectID);
-	glBindBuffer(GL_ARRAY_BUFFER, BufferID);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 15 * sizeof(float), (void*)(Cube.VertexBufferSize()+Cube.IndicesBufferSize()));
 	glEnableVertexAttribArray(1);
@@ -141,7 +143,7 @@ void MeGlWindow::senddatatoOpenGL()
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width(), height(), 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-//	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, FrameDepthID, 0);
+//	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, FrameDepthID, 0);*/
 
 	Cube.cleanup();
 	Plane.cleanup();
@@ -345,7 +347,7 @@ void MeGlWindow::installshaders()
 void MeGlWindow::initializeGL()
 {
 	glewInit();
-	glEnable(GL_DEPTH_TEST);
+	renderer()->init();
 	installshaders();
 	senddatatoOpenGL();
 	Mytimer = new QTimer(this);
@@ -356,7 +358,7 @@ void MeGlWindow::initializeGL()
 }
 
 void MeGlWindow::paintGL()
-{
+{/*
 //	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 //	glViewport(0, 0, 320, 180);
 
@@ -531,7 +533,11 @@ void MeGlWindow::paintGL()
 	FullTransformMatrix = World2ProjectionMatrix  *  TransformMatrix * ScaleMatrix * RotationMatrix;
 	glUniformMatrix4fv(FullTransformMatrixUniformLocation, 1, GL_FALSE, &FullTransformMatrix[0][0]);
 
-	glDrawElements(GL_TRIANGLES, CubenumIndices, GL_UNSIGNED_SHORT, (void*)CubeElementArrayOffset);
+	glDrawElements(GL_TRIANGLES, CubenumIndices, GL_UNSIGNED_SHORT, (void*)CubeElementArrayOffset);*/
+
+	//test my renderer
+	
+	
 }
 void MeGlWindow::DrawObjects(Camera & camera){
 
