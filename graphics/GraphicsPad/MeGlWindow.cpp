@@ -36,15 +36,20 @@ float RotationAngle = 0.0f;
 
 const char* MeGlWindow::TexFile[] = { "right.png","left.png","bottom.png","top.png","back.png","front.png" };
 
-void MeGlWindow::senddatatoOpenGL()
+void MeGlWindow::senddatatoRenderer()
 {
 	glClearColor(0, 0, 0, 1);
 
-	Shapedata Cube = ShapeFactory::MakeCube();
-	Shapedata Plane = ShapeFactory::MakePlane();
+	Shapedata CubeGeometry = ShapeFactory::MakeCube();
+	renderer()->AddGeometry(CubeGeometry);
+	Shapedata PlaneGeometry = ShapeFactory::MakePlane();
+	renderer()->AddGeometry(PlaneGeometry);
 
 	Pass* pass = renderer()->AddPass();
-	pass->setObject(Cube,glm::vec3(0,0,-5));
+	Object* Cube = renderer()->CreateObject(CubeGeometry);
+	Cube->Setposition(glm::vec3(0.0, 0.0, -5.0));
+	renderer()->BindShader2Object("Test_Vertexshader.glsl","Test_Fragmentshader.glsl",Cube);
+	pass->setObject(Cube);
 
 /*
 	GLuint BufferID;
@@ -145,8 +150,8 @@ void MeGlWindow::senddatatoOpenGL()
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 //	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, FrameDepthID, 0);*/
 
-	Cube.cleanup();
-	Plane.cleanup();
+	CubeGeometry.cleanup();
+	PlaneGeometry.cleanup();
 }
 void MeGlWindow::LoadCubeMap() {
 	glActiveTexture(GL_TEXTURE2);
@@ -163,6 +168,7 @@ void MeGlWindow::LoadCubeMap() {
 	glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 }
+/*
 bool checkStatus(
 	GLuint objectID,
 	PFNGLGETSHADERIVPROC objectPropertyGetterFunc,
@@ -208,7 +214,7 @@ std::string MeGlWindow::ReadShaderCode(const char* fileName)
 		std::istreambuf_iterator<char>(meInput),
 		std::istreambuf_iterator<char>());
 }
-
+*/
 void MeGlWindow::installshaders()
 {
 	GLuint VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
@@ -348,7 +354,7 @@ void MeGlWindow::initializeGL()
 {
 	glewInit();
 	renderer()->init();
-	installshaders();
+//	installshaders();
 	senddatatoOpenGL();
 	Mytimer = new QTimer(this);
 

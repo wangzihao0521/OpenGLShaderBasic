@@ -9,6 +9,6 @@ public:
 	Pass():
 		object(NULL){}
 
-	void setObject(Shapedata shapedata,glm::vec3 Pos = glm::vec3());
+	void setObject(Object* obj);
 	Object* getObject() const { return object; }
 };

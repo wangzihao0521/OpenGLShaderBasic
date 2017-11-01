@@ -12,14 +12,14 @@ class MeGlWindow : public QGLWidget
 protected:
 	void initializeGL();
 	void paintGL();
-	void senddatatoOpenGL();
+	void senddatatoRenderer();
 	void installshaders();
 	void keyPressEvent(QKeyEvent*);
 	void LoadCubeMap();
 	void DrawObjects(Camera & camera);
-	bool checkShaderStatus(GLuint ShaderID);
-	bool checkProgramStatus(GLuint ProgramID);
-	std::string ReadShaderCode(const char* file);
+//	bool checkShaderStatus(GLuint ShaderID);
+//	bool checkProgramStatus(GLuint ProgramID);
+//	std::string ReadShaderCode(const char* file);
 	static const char* TexFile[];
 
 	QTimer	*Mytimer;
