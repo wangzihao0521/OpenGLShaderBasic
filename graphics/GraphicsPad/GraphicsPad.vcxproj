@@ -177,6 +177,8 @@
     <None Include="PlaneShadowVertexShader.glsl" />
     <None Include="ShadowMapFragmentShader.glsl" />
     <None Include="ShadowMapVertexShader.glsl" />
+    <None Include="Test_Fragmentshader.glsl" />
+    <None Include="Test_Vertexshader.glsl" />
     <None Include="VertexShader.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -30,5 +30,7 @@
     <None Include="ShadowMapFragmentShader.glsl" />
     <None Include="PlaneShadowVertexShader.glsl" />
     <None Include="PlaneShadowFragmentShader.glsl" />
+    <None Include="Test_Fragmentshader.glsl" />
+    <None Include="Test_Vertexshader.glsl" />
   </ItemGroup>
 </Project>
