@@ -1,7 +1,6 @@
 #include <gl\glew.h>
 #include <MeGlWindow.h>
 #include <Vertex.h>
-#include <ShapeFactory.h>
 #include <glm\gtc\matrix_transform.hpp>
 #include <glm\glm.hpp>
 #include <QtGui\qkeyevent>

@@ -1,18 +1,18 @@
 #pragma once
-#include "ShapeData.h"
+#include "Mesh.h"
 #include "ShaderInfo.h"
 #include "Transform.h"
 
 class Object {
 protected:
-	Shapedata geometry;
+	Mesh mesh;
 	Transform transform;
 	ShaderInfo* shader;
 	GLuint NumIndicesBufferOffset;
 	
 public:
-	Object(Shapedata shapedata, Transform trans = Transform()) :
-		geometry(shapedata), transform(trans),shader(nullptr),ObjectID(0), NumIndicesBufferOffset(0){}
+	Object(Mesh mesh, Transform trans = Transform()) :
+		mesh(mesh), transform(trans),shader(nullptr), NumIndicesBufferOffset(0){}
 	void Setposition(glm::vec3 pos) { transform.setPosition(pos); }
 	void Setrotaion(glm::vec3 rot) { transform.setRotation(rot); }
 	void Setscale(glm::vec3 scale) { transform.setScale(scale); }
@@ -22,7 +22,7 @@ public:
 	void setShaderID(GLuint VshaderID, GLuint FshaderID);
 	void setProgramID(GLuint programID);
 	ShaderInfo* getShaderInfo() const { return shader; }
-	GLuint getObjectID() const { return geometry.geometryID; }
-	Shapedata getGeometry() const { return geometry; }
+	GLuint getObjectID() const { return mesh.GeometryID; }
+	Shapedata getGeometry() const { return mesh.geometry; }
 	GLuint getIndicesBufferOffset() const { return NumIndicesBufferOffset; }
 };

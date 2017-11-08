@@ -7,8 +7,7 @@ class Shapedata
 public:
 	Shapedata() :
 		vertices(0), numVertices(0),
-		Indices(0), numIndices(0),
-		geometryID(0)
+		Indices(0), numIndices(0)
 	{}
 
 	GLsizeiptr VertexBufferSize() const
@@ -33,6 +32,5 @@ public:
 	GLuint  numVertices;
 	GLushort*  Indices;
 	GLuint numIndices;
-	GLuint geometryID;
 
 };

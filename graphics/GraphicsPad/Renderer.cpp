@@ -3,6 +3,45 @@
 
 Renderer* Renderer::renderer = new Renderer();
 
+GLuint Renderer::bindandfillvertexbuffer(Shapedata geometry)
+{
+	GLuint bufferID;
+	glGenBuffers(1, &bufferID);
+	glBindBuffer(GL_ARRAY_BUFFER, bufferID);
+	glBufferData(GL_ARRAY_BUFFER, geometry.VertexBufferSize(), geometry.vertices, GL_STATIC_DRAW);
+	return bufferID;
+}
+
+GLuint Renderer::bindandfillindicesbuffer(Shapedata geometry)
+{
+	GLuint bufferID;
+	glGenBuffers(1, &bufferID);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufferID);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, geometry.IndicesBufferSize(), geometry.Indices, GL_STATIC_DRAW);
+	return bufferID;
+}
+
+GLuint Renderer::bindvertexarray(GLuint vbufferID, GLuint ibufferID)
+{
+	GLuint GeometryID;
+	glGenVertexArrays(1, &GeometryID);
+	glBindVertexArray(GeometryID);
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(2);
+	glEnableVertexAttribArray(3);
+	glEnableVertexAttribArray(4);
+	glBindBuffer(GL_ARRAY_BUFFER , vbufferID);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 15 * sizeof(float), 0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 15 * sizeof(float), (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 15 * sizeof(float), (void*)(6 * sizeof(float)));
+	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 15 * sizeof(float), (void*)(9 * sizeof(float)));
+	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 15 * sizeof(float), (void*)(11 * sizeof(float)));
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibufferID);
+
+	return GeometryID;
+}
+
 Object * Renderer::CreateObject(Shapedata geometry)
 {
 	Object* obj = new Object(geometry);
@@ -23,10 +62,19 @@ void Renderer::init()
 
 }
 
-void Renderer::start()
+void Renderer::CreateCubeInScene()
 {
-	PushAllGeoDataIntoGLBuffer();
-	SetAllGeoAttriAndID();
+	Shapedata CubeGeometry = ShapeFactory::MakeCube();
+//	if(!CheckGeometryExist(CubeGeometry))
+	Mesh m = CompleteMeshWithGeo(CubeGeometry);
+	AddMesh(m);
+	Object*  cube = new Object(m);
+	BindShader2Object("Test_Vertexshader.glsl", "Test_Fragmentshader.glsl", cube);
+	cube->Setposition(glm::vec3(0.0, 0.0, -5.0));
+	Pass* p = AddPass();
+	p->setObject(cube);
+
+
 }
 
 void Renderer::BindShader2Object(const char* VshaderFileName, const char* FshaderFileName, Object * obj)
@@ -72,9 +120,19 @@ Pass * Renderer::AddPass()
 	return pass;
 }
 
-void Renderer::AddGeometry(Shapedata geometry)
+Mesh Renderer::CompleteMeshWithGeo(Shapedata geometry)
 {
-	GeometryArray.push_back(geometry);
+	Mesh m(geometry) ;
+	m.VertexBufferID = bindandfillvertexbuffer(geometry);
+	m.indicesBufferID = bindandfillindicesbuffer(geometry);
+	m.GeometryID = bindvertexarray(m.VertexBufferID, m.indicesBufferID);
+
+	return m;
+}
+
+void Renderer::AddMesh(Mesh mesh)
+{
+	MeshArray.push_back(mesh);
 }
 
 bool checkStatus(
