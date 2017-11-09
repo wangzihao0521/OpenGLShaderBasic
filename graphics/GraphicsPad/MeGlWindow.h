@@ -12,8 +12,9 @@ class MeGlWindow : public QGLWidget
 protected:
 	void initializeGL();
 	void paintGL();
-	void senddatatoRenderer();
-	void installshaders();
+//	void senddatatoRenderer();
+//	void installshaders();
+	void UserInput();
 	void keyPressEvent(QKeyEvent*);
 	void LoadCubeMap();
 	void DrawObjects(Camera & camera);

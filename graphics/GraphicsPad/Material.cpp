@@ -1,0 +1,97 @@
+#include "Material.h"
+#include "GL\glew.h"
+
+bool checkStatus(
+	GLuint objectID,
+	PFNGLGETSHADERIVPROC objectPropertyGetterFunc,
+	PFNGLGETSHADERINFOLOGPROC getInfoLogFunc,
+	GLenum statusType)
+{
+	GLint status;
+	objectPropertyGetterFunc(objectID, statusType, &status);
+	if (status != GL_TRUE)
+	{
+		GLint infoLogLength;
+		objectPropertyGetterFunc(objectID, GL_INFO_LOG_LENGTH, &infoLogLength);
+		GLchar* buffer = new GLchar[infoLogLength];
+
+		GLsizei bufferSize;
+		getInfoLogFunc(objectID, infoLogLength, &bufferSize, buffer);
+		std::cout << buffer << std::endl;
+		delete[] buffer;
+		return false;
+	}
+	return true;
+}
+
+bool Material::checkShaderStatus(GLuint shaderID)
+{
+	return checkStatus(shaderID, glGetShaderiv, glGetShaderInfoLog, GL_COMPILE_STATUS);
+}
+
+bool Material::checkProgramStatus(GLuint programID)
+{
+	return checkStatus(programID, glGetProgramiv, glGetProgramInfoLog, GL_LINK_STATUS);
+}
+
+std::string Material::ReadShaderCode(const char* fileName)
+{
+	std::ifstream meInput(fileName);
+	if (!meInput.good())
+	{
+		std::cout << "File failed to load..." << fileName;
+		exit(1);
+	}
+	return std::string(
+		std::istreambuf_iterator<char>(meInput),
+		std::istreambuf_iterator<char>());
+}
+
+bool Material::CompileShader(char * VshaderFileName, char * FshaderFileName)
+{
+	GLuint VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
+	GLuint FragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+
+	const GLchar* adapter[1];
+	std::string temp = ReadShaderCode(VshaderFileName);
+	adapter[0] = temp.c_str();
+	glShaderSource(VertexShaderID, 1, adapter, 0);
+	temp = ReadShaderCode(FshaderFileName);
+	adapter[0] = temp.c_str();
+	glShaderSource(FragmentShaderID, 1, adapter, 0);
+
+	glCompileShader(VertexShaderID);
+	glCompileShader(FragmentShaderID);
+
+	if (!checkShaderStatus(VertexShaderID) || !checkShaderStatus(FragmentShaderID)) {
+		printf("shader compile failed");
+		return false;
+	}
+	
+	GLuint programID = glCreateProgram();
+	glAttachShader(programID, VertexShaderID);
+	glAttachShader(programID, FragmentShaderID);
+	glLinkProgram(programID);
+
+	if (!checkProgramStatus(programID)) {
+		printf("program compile failed");
+		return false;
+	}
+	else {
+		shaderinfo.setVshaderID(VertexShaderID);
+		shaderinfo.setFshaderID(FragmentShaderID);
+		shaderinfo.setProgramID(programID);
+	}
+
+	return true;
+}
+
+void Material::setVertexShader(char * vShaderFileName)
+{
+	VshaderFileName = vShaderFileName;
+}
+
+void Material::setFragmentShader(char * fShaderFileName)
+{
+	FshaderFileName = fShaderFileName;
+}

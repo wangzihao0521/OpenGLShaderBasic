@@ -50,15 +50,22 @@ Object * Renderer::CreateObject(Shapedata geometry)
 
 void Renderer::ExecutePass(Pass* pass)
 {
-	glUseProgram(pass->getObject()->getShaderInfo()->getProgramID());
+	glUseProgram(pass->getObject()->getMaterial().getShaderInfo().getProgramID());
 	glBindVertexArray(pass->getObject()->getObjectID());
-	glDrawElements(GL_TRIANGLES, pass->getObject()->getGeometry().numIndices, GL_UNSIGNED_SHORT, (void*)pass->getObject()->getIndicesBufferOffset());
+	Add_Zihao_MVP(pass);
+	glDrawElements(GL_TRIANGLES, pass->getObject()->getGeometry().numIndices, GL_UNSIGNED_SHORT, 0);
 }
 
-void Renderer::init()
+void Renderer::init(GLsizei width, GLsizei height)
 {
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
+	ScreenWidth = width;
+	ScreenHeight = height;
+	glViewport(0, 0, width, height);
+	CreateMaterial("DefaultMaterial");
+//	bindShader2Material("DefaultMaterial", "Test_Vertexshader.glsl", "Test_Fragmentshader.glsl"); //todo
+
 
 }
 
@@ -69,7 +76,7 @@ void Renderer::CreateCubeInScene()
 	Mesh m = CompleteMeshWithGeo(CubeGeometry);
 	AddMesh(m);
 	Object*  cube = new Object(m);
-	BindShader2Object("Test_Vertexshader.glsl", "Test_Fragmentshader.glsl", cube);
+	BindMaterial2Object("DefaultMaterial",cube);
 	cube->Setposition(glm::vec3(0.0, 0.0, -5.0));
 	Pass* p = AddPass();
 	p->setObject(cube);
@@ -77,40 +84,29 @@ void Renderer::CreateCubeInScene()
 
 }
 
-void Renderer::BindShader2Object(const char* VshaderFileName, const char* FshaderFileName, Object * obj)
+void Renderer::BindShader2Material(char* VshaderFileName, char* FshaderFileName, Material& material)
 {
-	GLuint VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
-	GLuint FragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+	bool Compiled = material.CompileShader(VshaderFileName, FshaderFileName);
+	if (Compiled) {
+		material.setVertexShader(VshaderFileName);
+		material.setFragmentShader(FshaderFileName);
+	}
+	
+}
 
-	const GLchar* adapter[1];
-	std::string temp = ReadShaderCode(VshaderFileName);
-	adapter[0] = temp.c_str();
-	glShaderSource(VertexShaderID, 1, adapter, 0);
-	temp = ReadShaderCode(FshaderFileName);
-	adapter[0] = temp.c_str();
-	glShaderSource(FragmentShaderID, 1, adapter, 0);
-
-	glCompileShader(VertexShaderID);
-	glCompileShader(FragmentShaderID);
-
-	if (!checkShaderStatus(VertexShaderID) || !checkShaderStatus(FragmentShaderID))
-		return;
-	else
-		obj->setShaderID(VertexShaderID, FragmentShaderID);
-
-	GLuint programID = glCreateProgram();
-	glAttachShader(programID, VertexShaderID);
-	glAttachShader(programID, FragmentShaderID);
-	glLinkProgram(programID);
-
-	if (!checkProgramStatus(programID))
-		return;
-	else
-		obj->setProgramID(programID);
-
-//	glDeleteShader(VertexShaderID);
-//	glDeleteShader(FragmentShaderID);
-
+void Renderer::BindMaterial2Object(char* MaterialName, Object * obj)
+{
+	bool Binded = false;
+	for (auto iter = MaterialArray.begin(); iter != MaterialArray.end(); iter++) {
+		if (iter->getName() == MaterialName) {
+			obj->bindMaterial(*iter);
+			Binded = true;
+		}
+	}
+	if (!Binded)
+		printf("Cannot find Material");
+	return;
+	
 }
 
 Pass * Renderer::AddPass()
@@ -118,6 +114,21 @@ Pass * Renderer::AddPass()
 	Pass* pass = new Pass();
 	PassArray.push_back(pass);
 	return pass;
+}
+
+Material Renderer::CreateMaterial(char * Materialname, char * VshaderFileName, char * FshaderFileName)
+{
+	Material material(Materialname, VshaderFileName, FshaderFileName);
+	bool Compiled = material.CompileShader(VshaderFileName, FshaderFileName);
+	if (Compiled) {
+		MaterialArray.push_back(material);
+		return material;
+	}
+	else
+	{
+		printf("Create Material failed");
+		return NULL;
+	}
 }
 
 Mesh Renderer::CompleteMeshWithGeo(Shapedata geometry)
@@ -135,48 +146,21 @@ void Renderer::AddMesh(Mesh mesh)
 	MeshArray.push_back(mesh);
 }
 
-bool checkStatus(
-	GLuint objectID,
-	PFNGLGETSHADERIVPROC objectPropertyGetterFunc,
-	PFNGLGETSHADERINFOLOGPROC getInfoLogFunc,
-	GLenum statusType)
+void Renderer::Add_Zihao_MVP(Pass* pass)
 {
-	GLint status;
-	objectPropertyGetterFunc(objectID, statusType, &status);
-	if (status != GL_TRUE)
-	{
-		GLint infoLogLength;
-		objectPropertyGetterFunc(objectID, GL_INFO_LOG_LENGTH, &infoLogLength);
-		GLchar* buffer = new GLchar[infoLogLength];
+	glm::mat4 CameraMatrix = pass->getCamera().getWorldToViewMatrix();
+	glm::mat4 projectionMatrix = glm::perspective(60.0f, ((float)ScreenWidth / ScreenHeight), 0.3f, 100.0f);
 
-		GLsizei bufferSize;
-		getInfoLogFunc(objectID, infoLogLength, &bufferSize, buffer);
-		std::cout << buffer << std::endl;
-		delete[] buffer;
-		return false;
-	}
-	return true;
+	glm::mat4 TransformMatrix = glm::translate(glm::mat4(), pass->getObject()->getTransform().getPosition());
+	glm::mat4 RotationMatrix =  glm::rotate(glm::mat4(), pass->getObject()->getTransform().getRotation().z, glm::vec3(0, 0, 1)) *
+								glm::rotate(glm::mat4(), pass->getObject()->getTransform().getRotation().x, glm::vec3(1, 0, 0)) *
+								glm::rotate(glm::mat4(), pass->getObject()->getTransform().getRotation().y, glm::vec3(0, 1, 0));
+	glm::mat4 ScaleMatrix = glm::scale(glm::mat4(), pass->getObject()->getTransform().getScale());
+	glm::mat4 Zihao_MVP = projectionMatrix * CameraMatrix * TransformMatrix * RotationMatrix * ScaleMatrix;
+
+	GLuint MVPuniformLocation = glGetUniformLocation(pass->getObject()->getMaterial().getShaderInfo().getProgramID(),"Zihao_MVP");
+	glUniformMatrix4fv(MVPuniformLocation, 1, GL_FALSE, &Zihao_MVP[0][0]);
+
 }
 
-bool Renderer::checkShaderStatus(GLuint shaderID)
-{
-	return checkStatus(shaderID, glGetShaderiv, glGetShaderInfoLog, GL_COMPILE_STATUS);
-}
 
-bool Renderer::checkProgramStatus(GLuint programID)
-{
-	return checkStatus(programID, glGetProgramiv, glGetProgramInfoLog, GL_LINK_STATUS);
-}
-
-std::string Renderer::ReadShaderCode(const char* fileName)
-{
-	std::ifstream meInput(fileName);
-	if (!meInput.good())
-	{
-		std::cout << "File failed to load..." << fileName;
-		exit(1);
-	}
-	return std::string(
-		std::istreambuf_iterator<char>(meInput),
-		std::istreambuf_iterator<char>());
-}

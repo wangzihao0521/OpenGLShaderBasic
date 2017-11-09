@@ -34,7 +34,7 @@ glm::vec3 LightPosition(0.0f, 2.5f, -5.0f);
 float RotationAngle = 0.0f;
 
 const char* MeGlWindow::TexFile[] = { "right.png","left.png","bottom.png","top.png","back.png","front.png" };
-
+/*
 void MeGlWindow::senddatatoRenderer()
 {
 	glClearColor(0, 0, 0, 1);
@@ -50,7 +50,7 @@ void MeGlWindow::senddatatoRenderer()
 	renderer()->BindShader2Object("Test_Vertexshader.glsl","Test_Fragmentshader.glsl",Cube);
 	pass->setObject(Cube);
 
-/*
+
 	GLuint BufferID;
 	GLuint	currentbufferoffset = 0;
 
@@ -147,11 +147,11 @@ void MeGlWindow::senddatatoRenderer()
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width(), height(), 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-//	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, FrameDepthID, 0);*/
+//	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, FrameDepthID, 0);
 
 	CubeGeometry.cleanup();
 	PlaneGeometry.cleanup();
-}
+}*/
 void MeGlWindow::LoadCubeMap() {
 	glActiveTexture(GL_TEXTURE2);
 	GLuint CubeBufferID;
@@ -213,7 +213,7 @@ std::string MeGlWindow::ReadShaderCode(const char* fileName)
 		std::istreambuf_iterator<char>(meInput),
 		std::istreambuf_iterator<char>());
 }
-*/
+
 void MeGlWindow::installshaders()
 {
 	GLuint VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
@@ -348,22 +348,28 @@ void MeGlWindow::installshaders()
 	glDeleteShader(VertexShaderID);
 	glDeleteShader(FragmentShaderID);
 }
-
+*/
 void MeGlWindow::initializeGL()
 {
 	glewInit();
-	renderer()->init();
+	renderer()->init(width(),height());
+	UserInput();
 //	installshaders();
-	senddatatoOpenGL();
-	Mytimer = new QTimer(this);
+//	senddatatoOpenGL();
+//	Mytimer = new QTimer(this);
 
-	connect(Mytimer, SIGNAL(timeout()), this, SLOT(update()));
-	Mytimer->setInterval(0);
-	Mytimer->start();
+//	connect(Mytimer, SIGNAL(timeout()), this, SLOT(update()));
+//	Mytimer->setInterval(0);
+//	Mytimer->start();
 }
 
 void MeGlWindow::paintGL()
-{/*
+{
+	for (auto iter = renderer()->PassArray.begin(); iter != renderer()->PassArray.end(); iter++)
+	{
+		renderer()->ExecutePass(*iter);
+	}
+	/*
 //	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 //	glViewport(0, 0, 320, 180);
 
@@ -655,6 +661,11 @@ void MeGlWindow::DrawObjects(Camera & camera){
 	glUniformMatrix4fv(SkyboxTransformMatrixUniformLocation, 1, GL_FALSE, &FullTransformMatrix[0][0]);
 
 	glDrawElements(GL_TRIANGLES, CubenumIndices, GL_UNSIGNED_SHORT, (void*)CubeElementArrayOffset);
+}
+
+void MeGlWindow::UserInput()
+{
+	renderer()->CreateCubeInScene();
 }
 
 void MeGlWindow::keyPressEvent(QKeyEvent* e)
