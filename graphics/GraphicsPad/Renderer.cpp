@@ -42,9 +42,9 @@ GLuint Renderer::bindvertexarray(GLuint vbufferID, GLuint ibufferID)
 	return GeometryID;
 }
 
-Object * Renderer::CreateObject(Shapedata geometry)
+Object * Renderer::CreateObject(char* ObjName,Shapedata geometry)
 {
-	Object* obj = new Object(geometry);
+	Object* obj = new Object(ObjName,geometry);
 	return obj;
 }
 
@@ -69,19 +69,37 @@ void Renderer::init(GLsizei width, GLsizei height)
 
 }
 
-void Renderer::CreateCubeInScene()
+void Renderer::CreateCubeInScene(char* CubeName)
 {
 	Shapedata CubeGeometry = ShapeFactory::MakeCube();
 //	if(!CheckGeometryExist(CubeGeometry))
 	Mesh m = CompleteMeshWithGeo(CubeGeometry);
-	AddMesh(m);
-	Object*  cube = new Object(m);
+	Object*  cube = new Object(CubeName,m);
+	AddObject(cube);
 	BindMaterial2Object("DefaultMaterial",cube);
-	cube->Setposition(glm::vec3(0.0, 0.0, -5.0));
+//	cube->Setposition(glm::vec3(0.0, 0.0, -5.0));
 	Pass* p = AddPass();
 	p->setObject(cube);
 
 
+}
+
+void Renderer::setPositionforObject(glm::vec3 position, char * ObjName)
+{
+	bool IsFinded = false;
+	for (auto iter = ObjectArray.begin(); iter != ObjectArray.end(); iter++)
+	{
+		if ((*iter)->getName() == ObjName)
+		{	
+			IsFinded = true;
+			(*iter)->Setposition(position);
+		}
+	
+	}
+	if (!IsFinded)
+	{
+		printf("Cannot find the obj");
+	}
 }
 
 void Renderer::BindShader2Material(char* VshaderFileName, char* FshaderFileName, Material& material)
@@ -133,17 +151,27 @@ Material Renderer::CreateMaterial(char * Materialname, char * VshaderFileName, c
 
 Mesh Renderer::CompleteMeshWithGeo(Shapedata geometry)
 {
+	for (auto iter = MeshArray.begin(); iter != MeshArray.end(); iter++)
+	{
+		if (geometry == iter->geometry)
+			return *iter;
+	}
 	Mesh m(geometry) ;
 	m.VertexBufferID = bindandfillvertexbuffer(geometry);
 	m.indicesBufferID = bindandfillindicesbuffer(geometry);
 	m.GeometryID = bindvertexarray(m.VertexBufferID, m.indicesBufferID);
-
+	AddMesh(m);
 	return m;
 }
 
 void Renderer::AddMesh(Mesh mesh)
 {
 	MeshArray.push_back(mesh);
+}
+
+void Renderer::AddObject(Object* obj)
+{
+	ObjectArray.push_back(obj);
 }
 
 void Renderer::Add_Zihao_MVP(Pass* pass)

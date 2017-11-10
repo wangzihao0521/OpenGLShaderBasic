@@ -365,6 +365,8 @@ void MeGlWindow::initializeGL()
 
 void MeGlWindow::paintGL()
 {
+	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+	glEnable(GL_DEPTH_TEST);
 	for (auto iter = renderer()->PassArray.begin(); iter != renderer()->PassArray.end(); iter++)
 	{
 		renderer()->ExecutePass(*iter);
@@ -665,7 +667,10 @@ void MeGlWindow::DrawObjects(Camera & camera){
 
 void MeGlWindow::UserInput()
 {
-	renderer()->CreateCubeInScene();
+	renderer()->CreateCubeInScene("Cube1");
+	renderer()->CreateCubeInScene("Cube2");
+	renderer()->setPositionforObject(glm::vec3(-3, 0, -5), "Cube1");
+	renderer()->setPositionforObject(glm::vec3(3, 0, -5), "Cube2");
 }
 
 void MeGlWindow::keyPressEvent(QKeyEvent* e)

@@ -5,13 +5,14 @@
 
 class Object {
 protected:
+	char* name;
 	Mesh mesh;
 	Transform transform;
 	Material material;
 	
 public:
-	Object(Mesh mesh, Transform trans = Transform()) :
-		mesh(mesh), transform(trans),material(Material()){}
+	Object(char* ObjName,Mesh mesh, Transform trans = Transform()) :
+		name(ObjName),mesh(mesh), transform(trans),material(Material()){}
 	void Setposition(glm::vec3 pos) { transform.setPosition(pos); }
 	void Setrotaion(glm::vec3 rot) { transform.setRotation(rot); }
 	void Setscale(glm::vec3 scale) { transform.setScale(scale); }
@@ -22,6 +23,7 @@ public:
 	void setProgramID(GLuint programID);
 	void bindMaterial(Material Material) { material = Material; }
 //	ShaderInfo* getShaderInfo() const { return shader; }
+	char* getName() const { return name; }
 	Transform getTransform() const { return transform; }
 	Material getMaterial() const { return material; }
 	GLuint getObjectID() const { return mesh.GeometryID; }

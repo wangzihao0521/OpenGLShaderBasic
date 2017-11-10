@@ -33,4 +33,31 @@ public:
 	GLushort*  Indices;
 	GLuint numIndices;
 
+	bool operator == (Shapedata geometry)
+	{
+		if (numVertices == geometry.numVertices && numIndices == geometry.numIndices)
+		{
+			for (int i = 0; i < numVertices; ++i)
+			{
+				if (vertices[i] == geometry.vertices[i])
+				{
+				}
+				else
+					return false;
+			}
+			for (int i = 0; i < numIndices; ++i)
+			{
+				if (Indices[i] == geometry.Indices[i])
+				{
+				}
+				else
+					return false;
+			}
+		}
+		else
+			return false;
+
+		return true;
+	}
+
 };
