@@ -671,6 +671,8 @@ void MeGlWindow::UserInput()
 	renderer()->CreateCubeInScene("Cube2");
 	renderer()->setPositionforObject(glm::vec3(-3, 0, -5), "Cube1");
 	renderer()->setPositionforObject(glm::vec3(3, 0, -5), "Cube2");
+//	renderer()->CreatePlaneInScene("Plane1");
+//	renderer()->setPositionforObject(glm::vec3(0, -2, -5), "Plane1");
 }
 
 void MeGlWindow::keyPressEvent(QKeyEvent* e)
@@ -678,34 +680,34 @@ void MeGlWindow::keyPressEvent(QKeyEvent* e)
 	switch (e->key())
 	{
 	case Qt::Key::Key_W:
-		MainCamera.move_forward();
+		renderer()->getCurrentCamera()->move_forward();
 		break;
 	case Qt::Key::Key_S:
-		MainCamera.move_backward();
+		renderer()->getCurrentCamera()->move_backward();
 		break;
 	case Qt::Key::Key_A:
-		MainCamera.move_leftward();
+		renderer()->getCurrentCamera()->move_leftward();
 		break;
 	case Qt::Key::Key_D:
-		MainCamera.move_rightward();
+		renderer()->getCurrentCamera()->move_rightward();
 		break;
 	case Qt::Key::Key_R:
-		MainCamera.move_upward();
+		renderer()->getCurrentCamera()->move_upward();
 		break;
 	case Qt::Key::Key_F:
-		MainCamera.move_downward();
+		renderer()->getCurrentCamera()->move_downward();
 		break;
 	case Qt::Key::Key_Q:
-		MainCamera.rotate_left();
+		renderer()->getCurrentCamera()->rotate_left();
 		break;
 	case Qt::Key::Key_E:
-		MainCamera.rotate_right();
+		renderer()->getCurrentCamera()->rotate_right();
 		break;
 	case Qt::Key::Key_Z:
-		MainCamera.rotate_up();
+		renderer()->getCurrentCamera()->rotate_up();
 		break;
 	case Qt::Key::Key_C:
-		MainCamera.rotate_down();
+		renderer()->getCurrentCamera()->rotate_down();
 		break;
 	case Qt::Key::Key_T:
 		LightCamera.rotate_left();

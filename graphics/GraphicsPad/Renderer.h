@@ -11,11 +11,15 @@ protected:
 	std::vector<Mesh> MeshArray;
 	std::vector<Material> MaterialArray;
 	static Renderer* renderer;
+	std::vector<Camera> CameraArray;
+	Camera CurrentCamera;
 
 private:
 	GLuint bindandfillvertexbuffer(Shapedata geometry);
 	GLuint bindandfillindicesbuffer(Shapedata geometry);
 	GLuint bindvertexarray(GLuint vbufferID, GLuint ibufferID);
+	void PushCameraInVector(Camera cam);
+	void setCurrentCamera(char* camName);
 	GLsizei ScreenWidth;
 	GLsizei ScreenHeight;
 public:
@@ -24,6 +28,7 @@ public:
 	void ExecutePass(Pass* pass);
 	void init(GLsizei width,GLsizei height);
 	void CreateCubeInScene(char* CubeName);
+	void CreatePlaneInScene(char* PlaneName);
 	void setPositionforObject(glm::vec3 position, char* ObjName);
 	void BindShader2Material(char* VshaderFileName,char* FshaderFileName, Material& material);
 	void BindMaterial2Object(char* MaterialName, Object* obj);
@@ -33,6 +38,7 @@ public:
 	void AddMesh(Mesh mesh);
 	void AddObject(Object* obj);
 	void Add_Zihao_MVP(Pass* pass);
+	Camera* getCurrentCamera() { return &CurrentCamera; }
 	Renderer* getInstatnce() { return renderer; }
 
 	std::vector<Pass*> PassArray;

@@ -5,13 +5,13 @@
 class Pass {
 protected:
 	Object* object;
-	Camera camera;
+	Camera* camera;
 
 public:
-	Pass():
-		object(NULL),camera(Camera()){}
+	Pass(Camera* cam):
+		object(NULL),camera(cam){}
 
 	void setObject(Object* obj);
 	Object* getObject() const { return object; }
-	Camera getCamera() const { return camera; }
+	Camera* getCamera() const { return camera; }
 };

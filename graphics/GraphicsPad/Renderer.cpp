@@ -42,6 +42,26 @@ GLuint Renderer::bindvertexarray(GLuint vbufferID, GLuint ibufferID)
 	return GeometryID;
 }
 
+void Renderer::PushCameraInVector(Camera cam)
+{
+	CameraArray.push_back(cam);
+}
+
+void Renderer::setCurrentCamera(char * camName)
+{
+	for (auto iter = CameraArray.begin(); iter != CameraArray.end(); ++iter)
+	{
+		if (iter->getName() == camName)
+		{
+			CurrentCamera = *iter;
+		}
+		else
+		{
+			printf("Cannot find target camera");
+		}
+	}
+}
+
 Object * Renderer::CreateObject(char* ObjName,Shapedata geometry)
 {
 	Object* obj = new Object(ObjName,geometry);
@@ -64,6 +84,9 @@ void Renderer::init(GLsizei width, GLsizei height)
 	ScreenHeight = height;
 	glViewport(0, 0, width, height);
 	CreateMaterial("DefaultMaterial");
+	Camera MainCamera;
+	PushCameraInVector(MainCamera);
+	setCurrentCamera("MainCamera");
 //	bindShader2Material("DefaultMaterial", "Test_Vertexshader.glsl", "Test_Fragmentshader.glsl"); //todo
 
 
@@ -80,6 +103,21 @@ void Renderer::CreateCubeInScene(char* CubeName)
 //	cube->Setposition(glm::vec3(0.0, 0.0, -5.0));
 	Pass* p = AddPass();
 	p->setObject(cube);
+
+
+}
+
+void Renderer::CreatePlaneInScene(char* PlaneName)
+{
+	Shapedata PlaneGeometry = ShapeFactory::MakePlane();
+	//	if(!CheckGeometryExist(CubeGeometry))
+	Mesh m = CompleteMeshWithGeo(PlaneGeometry);
+	Object*  Plane = new Object(PlaneName, m);
+	AddObject(Plane);
+	BindMaterial2Object("DefaultMaterial", Plane);
+	//	cube->Setposition(glm::vec3(0.0, 0.0, -5.0));
+	Pass* p = AddPass();
+	p->setObject(Plane);
 
 
 }
@@ -129,7 +167,7 @@ void Renderer::BindMaterial2Object(char* MaterialName, Object * obj)
 
 Pass * Renderer::AddPass()
 {
-	Pass* pass = new Pass();
+	Pass* pass = new Pass(&CurrentCamera);
 	PassArray.push_back(pass);
 	return pass;
 }
@@ -176,7 +214,7 @@ void Renderer::AddObject(Object* obj)
 
 void Renderer::Add_Zihao_MVP(Pass* pass)
 {
-	glm::mat4 CameraMatrix = pass->getCamera().getWorldToViewMatrix();
+	glm::mat4 CameraMatrix = pass->getCamera()->getWorldToViewMatrix();
 	glm::mat4 projectionMatrix = glm::perspective(60.0f, ((float)ScreenWidth / ScreenHeight), 0.3f, 100.0f);
 
 	glm::mat4 TransformMatrix = glm::translate(glm::mat4(), pass->getObject()->getTransform().getPosition());
