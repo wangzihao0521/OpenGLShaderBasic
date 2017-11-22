@@ -24,6 +24,7 @@ public:
 	void bindMaterial(Material Material) { material = Material; }
 //	ShaderInfo* getShaderInfo() const { return shader; }
 	char* getName() const { return name; }
+	Mesh getMesh() const { return mesh; }
 	Transform getTransform() const { return transform; }
 	Material getMaterial() const { return material; }
 	GLuint getObjectID() const { return mesh.GeometryID; }

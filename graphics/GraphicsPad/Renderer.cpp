@@ -72,6 +72,7 @@ void Renderer::ExecutePass(Pass* pass)
 {
 	glUseProgram(pass->getObject()->getMaterial().getShaderInfo().getProgramID());
 	glBindVertexArray(pass->getObject()->getObjectID());
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, pass->getObject()->getMesh().indicesBufferID);
 	Add_Zihao_MVP(pass);
 	glDrawElements(GL_TRIANGLES, pass->getObject()->getGeometry().numIndices, GL_UNSIGNED_SHORT, 0);
 }
@@ -95,12 +96,10 @@ void Renderer::init(GLsizei width, GLsizei height)
 void Renderer::CreateCubeInScene(char* CubeName)
 {
 	Shapedata CubeGeometry = ShapeFactory::MakeCube();
-//	if(!CheckGeometryExist(CubeGeometry))
 	Mesh m = CompleteMeshWithGeo(CubeGeometry);
 	Object*  cube = new Object(CubeName,m);
 	AddObject(cube);
 	BindMaterial2Object("DefaultMaterial",cube);
-//	cube->Setposition(glm::vec3(0.0, 0.0, -5.0));
 	Pass* p = AddPass();
 	p->setObject(cube);
 
@@ -110,16 +109,12 @@ void Renderer::CreateCubeInScene(char* CubeName)
 void Renderer::CreatePlaneInScene(char* PlaneName)
 {
 	Shapedata PlaneGeometry = ShapeFactory::MakePlane();
-	//	if(!CheckGeometryExist(CubeGeometry))
 	Mesh m = CompleteMeshWithGeo(PlaneGeometry);
 	Object*  Plane = new Object(PlaneName, m);
 	AddObject(Plane);
 	BindMaterial2Object("DefaultMaterial", Plane);
-	//	cube->Setposition(glm::vec3(0.0, 0.0, -5.0));
 	Pass* p = AddPass();
 	p->setObject(Plane);
-
-
 }
 
 void Renderer::setPositionforObject(glm::vec3 position, char * ObjName)

@@ -667,12 +667,14 @@ void MeGlWindow::DrawObjects(Camera & camera){
 
 void MeGlWindow::UserInput()
 {
+	
 	renderer()->CreateCubeInScene("Cube1");
 	renderer()->CreateCubeInScene("Cube2");
 	renderer()->setPositionforObject(glm::vec3(-3, 0, -5), "Cube1");
 	renderer()->setPositionforObject(glm::vec3(3, 0, -5), "Cube2");
-//	renderer()->CreatePlaneInScene("Plane1");
-//	renderer()->setPositionforObject(glm::vec3(0, -2, -5), "Plane1");
+	renderer()->CreatePlaneInScene("Plane1");
+	renderer()->setPositionforObject(glm::vec3(0, -2, -5), "Plane1");
+	
 }
 
 void MeGlWindow::keyPressEvent(QKeyEvent* e)
