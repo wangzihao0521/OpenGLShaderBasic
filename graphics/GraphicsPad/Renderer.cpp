@@ -1,7 +1,12 @@
 #include "Renderer.h"
 #include "GL\glew.h"
+#include "PointLight.h"
 
 Renderer* Renderer::renderer = new Renderer();
+
+Camera Renderer::CurrentCamera = Camera();
+Object* Renderer::P_light_obj = nullptr;
+PointLight* Renderer::CurrentPointLight = nullptr;
 
 GLuint Renderer::bindandfillvertexbuffer(Shapedata geometry)
 {
@@ -62,6 +67,35 @@ void Renderer::setCurrentCamera(char * camName)
 	}
 }
 
+void Renderer::init_Pointlight()
+{
+	Shapedata CubeGeometry = ShapeFactory::MakeCube();
+	Mesh m = CompleteMeshWithGeo(CubeGeometry);
+	Object* P = new Object("", m);
+	P->Setscale(glm::vec3(0.2f, 0.2f, 0.2f));
+	BindMaterial2Object("Zihao_DefaultMaterial", P);
+	P_light_obj = P;
+}
+
+void Renderer::Add_LightUniform(Pass* pass)
+{
+	GLint AmbientuniformLocation = glGetUniformLocation(pass->getObject()->getMaterial().getShaderInfo().getProgramID(), "Zihao_AmbientLight");
+	if (AmbientuniformLocation >= 0)
+		glUniform3fv(AmbientuniformLocation, 1, &AmbientLightIntense[0]);
+	if (CurrentPointLight)
+	{
+		GLint LightPosuniformLocation = glGetUniformLocation(pass->getObject()->getMaterial().getShaderInfo().getProgramID(), "Zihao_LightPosition_WS");
+		if (LightPosuniformLocation >= 0)
+			glUniform3fv(LightPosuniformLocation, 1, &CurrentPointLight->getPosition()[0]);
+	}
+	GLint ViewPosuniformLocation = glGetUniformLocation(pass->getObject()->getMaterial().getShaderInfo().getProgramID(), "Zihao_ViewPosition_WS");
+	if (ViewPosuniformLocation >= 0)
+		glUniform3fv(ViewPosuniformLocation, 1, &CurrentCamera.getPosition()[0]);
+	GLint AttenuationuniformLocation = glGetUniformLocation(pass->getObject()->getMaterial().getShaderInfo().getProgramID(), "Zihao_Attenuation");
+	if (AttenuationuniformLocation >= 0)
+		glUniform1f(AttenuationuniformLocation, CurrentPointLight->getAttenuation());
+}
+
 Object * Renderer::CreateObject(char* ObjName,Shapedata geometry)
 {
 	Object* obj = new Object(ObjName,geometry);
@@ -74,6 +108,7 @@ void Renderer::ExecutePass(Pass* pass)
 	glBindVertexArray(pass->getObject()->getObjectID());
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, pass->getObject()->getMesh().indicesBufferID);
 	Add_Zihao_MVP(pass);
+	Add_LightUniform(pass);
 	glDrawElements(GL_TRIANGLES, pass->getObject()->getGeometry().numIndices, GL_UNSIGNED_SHORT, 0);
 }
 
@@ -83,11 +118,18 @@ void Renderer::init(GLsizei width, GLsizei height)
 	glEnable(GL_DEPTH_TEST);
 	ScreenWidth = width;
 	ScreenHeight = height;
+	AmbientLightIntense = glm::vec3(0.5, 0.5, 0.5);
 	glViewport(0, 0, width, height);
-	CreateMaterial("DefaultMaterial");
+	//Every obj created in scene uses default material first
+	CreateMaterial("Zihao_DefaultMaterial");
+	//Every Point Light created in scene use the same default light material 
+	CreateMaterial("Zihao_PLightDefaultMaterial","PLight_VertexShader.glsl","PLight_FragmentShader.glsl");
+	//editor Camera
 	Camera MainCamera;
 	PushCameraInVector(MainCamera);
 	setCurrentCamera("MainCamera");
+	//point light object initialize
+	init_Pointlight();
 //	bindShader2Material("DefaultMaterial", "Test_Vertexshader.glsl", "Test_Fragmentshader.glsl"); //todo
 
 
@@ -99,7 +141,7 @@ void Renderer::CreateCubeInScene(char* CubeName)
 	Mesh m = CompleteMeshWithGeo(CubeGeometry);
 	Object*  cube = new Object(CubeName,m);
 	AddObject(cube);
-	BindMaterial2Object("DefaultMaterial",cube);
+	BindMaterial2Object("Zihao_DefaultMaterial",cube);
 	Pass* p = AddPass();
 	p->setObject(cube);
 
@@ -112,9 +154,21 @@ void Renderer::CreatePlaneInScene(char* PlaneName)
 	Mesh m = CompleteMeshWithGeo(PlaneGeometry);
 	Object*  Plane = new Object(PlaneName, m);
 	AddObject(Plane);
-	BindMaterial2Object("DefaultMaterial", Plane);
+	BindMaterial2Object("Zihao_DefaultMaterial", Plane);
 	Pass* p = AddPass();
 	p->setObject(Plane);
+}
+
+void Renderer::CreatePointLight(char * LightName, glm::vec3 pos)
+{
+	PointLight* P_light = new PointLight();
+	Object* obj_P_light = new Object(LightName, P_light_obj->getMesh(),P_light_obj->getTransform());
+	obj_P_light->Setposition(pos);
+	BindMaterial2Object("Zihao_PLightDefaultMaterial", obj_P_light);
+	P_light->setObject(obj_P_light);
+	Pass* p = AddPass();
+	p->setObject(obj_P_light);
+	CurrentPointLight = P_light;
 }
 
 void Renderer::setPositionforObject(glm::vec3 position, char * ObjName)
@@ -217,10 +271,17 @@ void Renderer::Add_Zihao_MVP(Pass* pass)
 								glm::rotate(glm::mat4(), pass->getObject()->getTransform().getRotation().x, glm::vec3(1, 0, 0)) *
 								glm::rotate(glm::mat4(), pass->getObject()->getTransform().getRotation().y, glm::vec3(0, 1, 0));
 	glm::mat4 ScaleMatrix = glm::scale(glm::mat4(), pass->getObject()->getTransform().getScale());
-	glm::mat4 Zihao_MVP = projectionMatrix * CameraMatrix * TransformMatrix * RotationMatrix * ScaleMatrix;
-
-	GLuint MVPuniformLocation = glGetUniformLocation(pass->getObject()->getMaterial().getShaderInfo().getProgramID(),"Zihao_MVP");
-	glUniformMatrix4fv(MVPuniformLocation, 1, GL_FALSE, &Zihao_MVP[0][0]);
+	glm::mat4 Zihao_M2W = TransformMatrix * RotationMatrix * ScaleMatrix;
+	glm::mat4 Zihao_MVP = projectionMatrix * CameraMatrix * Zihao_M2W;
+	
+	
+	GLint M2WuniformLocation = glGetUniformLocation(pass->getObject()->getMaterial().getShaderInfo().getProgramID(), "Zihao_M2W");
+	if (M2WuniformLocation >= 0)
+		glUniformMatrix4fv(M2WuniformLocation, 1, GL_FALSE, &Zihao_M2W[0][0]);
+	GLint MVPuniformLocation = glGetUniformLocation(pass->getObject()->getMaterial().getShaderInfo().getProgramID(),"Zihao_MVP");
+	if(MVPuniformLocation>=0)
+		glUniformMatrix4fv(MVPuniformLocation, 1, GL_FALSE, &Zihao_MVP[0][0]);
+	
 
 }
 

@@ -674,6 +674,7 @@ void MeGlWindow::UserInput()
 	renderer()->setPositionforObject(glm::vec3(3, 0, -5), "Cube2");
 	renderer()->CreatePlaneInScene("Plane1");
 	renderer()->setPositionforObject(glm::vec3(0, -2, -5), "Plane1");
+	renderer()->CreatePointLight("PL1", glm::vec3(0.0f, 3.0f, -5.0f));
 	
 }
 
@@ -724,22 +725,29 @@ void MeGlWindow::keyPressEvent(QKeyEvent* e)
 		LightCamera.rotate_down();
 		break;
 	case Qt::Key::Key_I:
-		LightPosition += glm::vec3 (0,0,-0.2);
-		break;
+		if (PointLight* p = renderer()->getCurrentPLight())		
+			p->Move_forward();
+		break;	
 	case Qt::Key::Key_K:
-		LightPosition += glm::vec3(0, 0, 0.2);
+		if (PointLight* p = renderer()->getCurrentPLight())
+			p->Move_backward();
 		break;
 	case Qt::Key::Key_J:
-		LightPosition += glm::vec3(-0.2, 0, -0.0);
+		if (PointLight* p = renderer()->getCurrentPLight())
+			p->Move_leftward();
 		break;
 	case Qt::Key::Key_L:
-		LightPosition += glm::vec3(0.2, 0, -0.0);
+		if (PointLight* p = renderer()->getCurrentPLight())
+			p->Move_rightward();
 		break;
 	case Qt::Key::Key_U:
-		LightPosition += glm::vec3(0, 0.2, -0.0);
+		if (PointLight* p = renderer()->getCurrentPLight())
+			p->Move_upward();
 		break;
 	case Qt::Key::Key_O:
-		LightPosition += glm::vec3(0, -0.2, -0.0);
+		if (PointLight* p = renderer()->getCurrentPLight())
+			p->Move_downward();
+		break;
 	}
 	repaint();
 }

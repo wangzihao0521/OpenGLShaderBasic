@@ -4,6 +4,7 @@
 #include <ShapeFactory.h>
 #include "Material.h"
 #include <glm\gtc\matrix_transform.hpp>
+#include "PointLight.h"
 
 class Renderer {
 protected:
@@ -12,7 +13,9 @@ protected:
 	std::vector<Material> MaterialArray;
 	static Renderer* renderer;
 	std::vector<Camera> CameraArray;
-	Camera CurrentCamera;
+	static Camera CurrentCamera;
+	static PointLight* CurrentPointLight;
+	static Object* P_light_obj;
 
 private:
 	GLuint bindandfillvertexbuffer(Shapedata geometry);
@@ -20,8 +23,11 @@ private:
 	GLuint bindvertexarray(GLuint vbufferID, GLuint ibufferID);
 	void PushCameraInVector(Camera cam);
 	void setCurrentCamera(char* camName);
+	void init_Pointlight();
 	GLsizei ScreenWidth;
 	GLsizei ScreenHeight;
+	glm::vec3 AmbientLightIntense;
+	void Add_LightUniform(Pass* pass);
 public:
 	Renderer() {};
 	Object* CreateObject(char* ObjName,Shapedata geo);
@@ -29,6 +35,7 @@ public:
 	void init(GLsizei width,GLsizei height);
 	void CreateCubeInScene(char* CubeName);
 	void CreatePlaneInScene(char* PlaneName);
+	void CreatePointLight(char* LightName, glm::vec3 pos = glm::vec3());
 	void setPositionforObject(glm::vec3 position, char* ObjName);
 	void BindShader2Material(char* VshaderFileName,char* FshaderFileName, Material& material);
 	void BindMaterial2Object(char* MaterialName, Object* obj);
@@ -39,7 +46,9 @@ public:
 	void AddObject(Object* obj);
 	void Add_Zihao_MVP(Pass* pass);
 	Camera* getCurrentCamera() { return &CurrentCamera; }
+	PointLight* getCurrentPLight() { return  CurrentPointLight ; }
 	Renderer* getInstatnce() { return renderer; }
 
 	std::vector<Pass*> PassArray;
+	
 };

@@ -164,6 +164,7 @@
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="Pass.h" />
+    <ClInclude Include="PointLight.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="ShaderInfo.h" />
     <ClInclude Include="ShapeData.h" />
@@ -179,6 +180,8 @@
     <None Include="FragmentShader.glsl" />
     <None Include="PlaneShadowFragmentShader.glsl" />
     <None Include="PlaneShadowVertexShader.glsl" />
+    <None Include="PLight_FragmentShader.glsl" />
+    <None Include="PLight_VertexShader.glsl" />
     <None Include="ShadowMapFragmentShader.glsl" />
     <None Include="ShadowMapVertexShader.glsl" />
     <None Include="Test_Fragmentshader.glsl" />

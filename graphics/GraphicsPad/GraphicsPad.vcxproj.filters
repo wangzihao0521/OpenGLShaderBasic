@@ -22,6 +22,7 @@
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Transform.h" />
+    <ClInclude Include="PointLight.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="VertexShader.glsl" />
@@ -36,5 +37,7 @@
     <None Include="PlaneShadowFragmentShader.glsl" />
     <None Include="Test_Fragmentshader.glsl" />
     <None Include="Test_Vertexshader.glsl" />
+    <None Include="PLight_VertexShader.glsl" />
+    <None Include="PLight_FragmentShader.glsl" />
   </ItemGroup>
 </Project>
