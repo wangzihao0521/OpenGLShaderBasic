@@ -365,6 +365,7 @@ void MeGlWindow::initializeGL()
 
 void MeGlWindow::paintGL()
 {
+	glViewport(0, 0, width(), height());
 	renderer()->RenderScene();
 	/*
 //	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);

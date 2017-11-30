@@ -147,9 +147,11 @@ void Renderer::init(GLsizei width, GLsizei height)
 	//import default texture
 	ImportTexture("white.png");
 	ImportTexture("black.png");
+	ImportTexture("Normal_map.png");
 	//Every obj created in scene uses default material first
 	CreateMaterial("Zihao_DefaultMaterial");
 	Add_Property_Material("Zihao_DefaultMaterial","MyTexture",M_Texture2D,"white" );
+	Add_Property_Material("Zihao_DefaultMaterial", "NormalMap", M_Texture2D,"Normal_map.png");
 	//Every Point Light created in scene use the same default light material 
 	CreateMaterial("Zihao_PLightDefaultMaterial","PLight_VertexShader.glsl","PLight_FragmentShader.glsl");
 	//editor Camera

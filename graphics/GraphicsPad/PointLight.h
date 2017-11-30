@@ -10,7 +10,7 @@ protected:
 public:
 	PointLight() { 
 		Light_obj = nullptr; 
-		AttenuationFactor = 0.03;
+		AttenuationFactor = 0.1;
 	}
 	void setObject (Object* obj) { Light_obj = obj; }
 	glm::vec3 getPosition() const { return Light_obj->getTransform().getPosition(); }

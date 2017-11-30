@@ -28,7 +28,7 @@ bool Material::checkPropertyNoExist(char * P_name)
 {
 	for (auto iter = PropertyArray.begin(); iter != PropertyArray.end(); ++iter)
 	{
-		if ((*iter)->getName() == P_name);
+		if ((*iter)->getName() == P_name)
 		{
 			printf("Property already exists");
 			return false;
