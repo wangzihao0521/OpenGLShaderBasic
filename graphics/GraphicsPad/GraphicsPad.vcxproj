@@ -169,6 +169,7 @@
     <ClInclude Include="ShaderInfo.h" />
     <ClInclude Include="ShapeData.h" />
     <ClInclude Include="ShapeFactory.h" />
+    <ClInclude Include="Texture.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="Vertex.h" />
   </ItemGroup>

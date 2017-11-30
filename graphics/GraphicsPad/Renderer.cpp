@@ -96,6 +96,11 @@ void Renderer::Add_LightUniform(Pass* pass)
 		glUniform1f(AttenuationuniformLocation, CurrentPointLight->getAttenuation());
 }
 
+void Renderer::Add_AllMaterialProperty(Material* mat)
+{
+	mat->AddAllPropertyUniform();
+}
+
 Object * Renderer::CreateObject(char* ObjName,Shapedata geometry)
 {
 	Object* obj = new Object(ObjName,geometry);
@@ -109,7 +114,26 @@ void Renderer::ExecutePass(Pass* pass)
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, pass->getObject()->getMesh().indicesBufferID);
 	Add_Zihao_MVP(pass);
 	Add_LightUniform(pass);
+	Add_AllMaterialProperty(&pass->getObject()->getMaterial());
 	glDrawElements(GL_TRIANGLES, pass->getObject()->getGeometry().numIndices, GL_UNSIGNED_SHORT, 0);
+}
+
+Texture* Renderer::FindTextureByName(char * TexName)
+{
+	bool IsFound = false;
+	std::string F_name = TexName;
+	F_name += ".png";
+	for (auto iter = TextureArray.begin(); iter != TextureArray.end(); iter++)
+	{
+		if ((*iter)->getName() == TexName || (*iter)->getName() == F_name)
+		{
+			IsFound = true;
+			return *iter;
+		}
+	}
+	if (!IsFound)
+		printf("Cannot Find the Texture");
+	return nullptr;
 }
 
 void Renderer::init(GLsizei width, GLsizei height)
@@ -120,8 +144,12 @@ void Renderer::init(GLsizei width, GLsizei height)
 	ScreenHeight = height;
 	AmbientLightIntense = glm::vec3(0.5, 0.5, 0.5);
 	glViewport(0, 0, width, height);
+	//import default texture
+	ImportTexture("white.png");
+	ImportTexture("black.png");
 	//Every obj created in scene uses default material first
 	CreateMaterial("Zihao_DefaultMaterial");
+	Add_Property_Material("Zihao_DefaultMaterial","MyTexture",M_Texture2D,"white" );
 	//Every Point Light created in scene use the same default light material 
 	CreateMaterial("Zihao_PLightDefaultMaterial","PLight_VertexShader.glsl","PLight_FragmentShader.glsl");
 	//editor Camera
@@ -133,6 +161,16 @@ void Renderer::init(GLsizei width, GLsizei height)
 //	bindShader2Material("DefaultMaterial", "Test_Vertexshader.glsl", "Test_Fragmentshader.glsl"); //todo
 
 
+}
+
+void Renderer::RenderScene()
+{
+	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+	glEnable(GL_DEPTH_TEST);
+	for (auto iter = PassArray.begin(); iter != PassArray.end(); iter++)
+	{
+		ExecutePass(*iter);
+	}
 }
 
 void Renderer::CreateCubeInScene(char* CubeName)
@@ -169,6 +207,24 @@ void Renderer::CreatePointLight(char * LightName, glm::vec3 pos)
 	Pass* p = AddPass();
 	p->setObject(obj_P_light);
 	CurrentPointLight = P_light;
+}
+
+void Renderer::ImportTexture(char * FileName)
+{
+	QImage texture = QGLWidget::convertToGLFormat(QImage(FileName, "PNG"));
+
+	GLuint i = TextureArray.size();
+	glActiveTexture(GL_TEXTURE0+i);
+
+	GLuint TextureID;
+	glGenTextures(1, &TextureID);
+	glBindTexture(GL_TEXTURE_2D, TextureID);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture.width(), texture.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, texture.bits());
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	Texture* Tex_obj = new Texture(FileName,i,TextureID);
+	TextureArray.push_back(Tex_obj);
 }
 
 void Renderer::setPositionforObject(glm::vec3 position, char * ObjName)
@@ -283,6 +339,112 @@ void Renderer::Add_Zihao_MVP(Pass* pass)
 		glUniformMatrix4fv(MVPuniformLocation, 1, GL_FALSE, &Zihao_MVP[0][0]);
 	
 
+}
+
+void Renderer::Add_Property_Material(char * MaterialName, char * PropertyName, M_PropertyType PropertyType, char * DefaultValue)
+{
+	bool IsFound = false;
+	for (auto iter = MaterialArray.begin(); iter != MaterialArray.end(); iter++) {
+		if (iter->getName() == MaterialName) {
+			if (iter->checkPropertyNoExist(PropertyName))
+			{
+				Texture* tex = FindTextureByName(DefaultValue);
+				if (tex)
+				{
+					M_Property* p = new M_Property(PropertyName, PropertyType, tex);
+					iter->AddProperty(p);
+					return;
+				}
+				else
+					return;
+			}
+		}
+	}
+	if (!IsFound)
+		printf("Cannot find the Material.");
+	return;
+}
+
+void Renderer::Add_Property_Material(char * MaterialName, char * PropertyName, M_PropertyType PropertyType, glm::vec2 DefaultValue)
+{
+	bool IsFound = false;
+	for (auto iter = MaterialArray.begin(); iter != MaterialArray.end(); iter++) {
+		if (iter->getName() == MaterialName) {
+			if (iter->checkPropertyNoExist(PropertyName))
+			{			
+				M_Property* p = new M_Property(PropertyName, PropertyType, DefaultValue);
+				iter->AddProperty(p);
+				return;
+			}
+		}
+	}
+	if (!IsFound)
+		printf("Cannot find the Material.");
+	return;
+}
+
+void Renderer::Add_Property_Material(char * MaterialName, char * PropertyName, M_PropertyType PropertyType, glm::vec3 DefaultValue)
+{
+	bool IsFound = false;
+	for (auto iter = MaterialArray.begin(); iter != MaterialArray.end(); iter++) {
+		if (iter->getName() == MaterialName) {
+			if (iter->checkPropertyNoExist(PropertyName))
+			{
+				M_Property* p = new M_Property(PropertyName, PropertyType, DefaultValue);
+				iter->AddProperty(p);
+				return;
+			}
+		}
+	}
+	if (!IsFound)
+		printf("Cannot find the Material.");
+	return;
+}
+
+void Renderer::Add_Property_Material(char * MaterialName, char * PropertyName, M_PropertyType PropertyType, float DefaultValue)
+{
+	bool IsFound = false;
+	for (auto iter = MaterialArray.begin(); iter != MaterialArray.end(); iter++) {
+		if (iter->getName() == MaterialName) {
+			if (iter->checkPropertyNoExist(PropertyName))
+			{
+				M_Property* p = new M_Property(PropertyName, PropertyType, DefaultValue);
+				iter->AddProperty(p);
+				return;
+			}
+		}
+	}
+	if (!IsFound)
+		printf("Cannot find the Material.");
+	return;
+}
+
+void Renderer::Bind_Property_Material(char * MaterialName, char * PropertyName, char * TexName)
+{
+	bool IsFound = false;
+	for (auto iter = MaterialArray.begin(); iter != MaterialArray.end(); iter++) {
+		if (iter->getName() == MaterialName) {
+			M_Property* p = iter->FindPropertyByName(PropertyName);
+			Texture* tex = FindTextureByName(TexName);
+			if (p && tex)
+			{
+				if (p->getType() != M_Texture2D)
+				{
+					printf("Type is wrong");
+					return;
+				}
+				else
+					p->setTexture(tex);
+				return;
+			}
+			else
+				return;
+			
+		}
+	}
+	if (!IsFound)
+		printf("Cannot find the Material.");
+	return;
 }
 
 

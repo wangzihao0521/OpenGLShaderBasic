@@ -24,6 +24,32 @@ bool checkStatus(
 	return true;
 }
 
+bool Material::checkPropertyNoExist(char * P_name)
+{
+	for (auto iter = PropertyArray.begin(); iter != PropertyArray.end(); ++iter)
+	{
+		if ((*iter)->getName() == P_name);
+		{
+			printf("Property already exists");
+			return false;
+		}
+	}
+	return true;
+}
+
+M_Property * Material::FindPropertyByName(char * P_name)
+{
+	for (auto iter = PropertyArray.begin(); iter != PropertyArray.end(); ++iter)
+	{
+		if ((*iter)->getName() == P_name);
+		{
+			return *iter;
+		}
+	}
+	printf("Cannot find the property");
+	return nullptr;
+}
+
 bool Material::checkShaderStatus(GLuint shaderID)
 {
 	return checkStatus(shaderID, glGetShaderiv, glGetShaderInfoLog, GL_COMPILE_STATUS);
@@ -94,4 +120,25 @@ void Material::setVertexShader(char * vShaderFileName)
 void Material::setFragmentShader(char * fShaderFileName)
 {
 	FshaderFileName = fShaderFileName;
+}
+
+void Material::AddAllPropertyUniform()
+{
+	if (PropertyArray.empty())
+	{
+		return;
+	}
+	for (auto iter = PropertyArray.begin(); iter != PropertyArray.end(); iter++)
+	{
+		GLint UniformLocation = glGetUniformLocation(shaderinfo.getProgramID(), (*iter)->getName());
+		switch ((*iter)->getType())
+		{
+		case M_Texture2D:
+		{
+			glUniform1i(UniformLocation, (*iter)->getTexture()->getBufferID());
+		}
+		default:
+			break;
+		}
+	}
 }

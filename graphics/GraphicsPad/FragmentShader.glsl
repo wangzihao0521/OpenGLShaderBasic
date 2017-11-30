@@ -31,7 +31,6 @@ void main()
 	vec3 WorldNormal = vec3 (transpose(inverse(M2WMatrix)) * vec4(ActualModelNormal,0));
 
 	vec4 texColor = texture(MyTexture,f_uv);
-
 	
 	float brightness = clamp(dot(lightVector, WorldNormal),0,1);
 	vec4 diffuseLight =  attenuation * brightness * texColor;

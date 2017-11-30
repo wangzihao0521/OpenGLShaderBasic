@@ -365,12 +365,7 @@ void MeGlWindow::initializeGL()
 
 void MeGlWindow::paintGL()
 {
-	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-	glEnable(GL_DEPTH_TEST);
-	for (auto iter = renderer()->PassArray.begin(); iter != renderer()->PassArray.end(); iter++)
-	{
-		renderer()->ExecutePass(*iter);
-	}
+	renderer()->RenderScene();
 	/*
 //	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 //	glViewport(0, 0, 320, 180);
@@ -667,7 +662,6 @@ void MeGlWindow::DrawObjects(Camera & camera){
 
 void MeGlWindow::UserInput()
 {
-	
 	renderer()->CreateCubeInScene("Cube1");
 	renderer()->CreateCubeInScene("Cube2");
 	renderer()->setPositionforObject(glm::vec3(-3, 0, -5), "Cube1");
@@ -675,6 +669,7 @@ void MeGlWindow::UserInput()
 	renderer()->CreatePlaneInScene("Plane1");
 	renderer()->setPositionforObject(glm::vec3(0, -2, -5), "Plane1");
 	renderer()->CreatePointLight("PL1", glm::vec3(0.0f, 3.0f, -5.0f));
+	renderer()->ImportTexture("MyTexture.png");
 	
 }
 
@@ -747,6 +742,9 @@ void MeGlWindow::keyPressEvent(QKeyEvent* e)
 	case Qt::Key::Key_O:
 		if (PointLight* p = renderer()->getCurrentPLight())
 			p->Move_downward();
+		break;
+	case Qt::Key::Key_P:
+		renderer()->Bind_Property_Material("Zihao_DefaultMaterial", "MyTexture", "MyTexture");
 		break;
 	}
 	repaint();

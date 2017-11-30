@@ -23,6 +23,7 @@
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="PointLight.h" />
+    <ClInclude Include="Texture.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="VertexShader.glsl" />
