@@ -77,6 +77,16 @@ void Renderer::init_Pointlight()
 	P_light_obj = P;
 }
 
+void Renderer::init_SkyBox()
+{
+	CreateCubeInScene("SkyBox");
+	CreateMaterial("SkyBox_Material", "CubeMapVertexShader.glsl", "CubeMapFragmentShader.glsl");
+	Add_Property_Material("SkyBox_Material", "CubeMap", M_Texture3D, "SkyBox");
+	BindMaterial2Object("SkyBox_Material", "SkyBox");
+	setScaleforObject(glm::vec3(50, 50, 50),"SkyBox");
+	ToggleSkyboxforObject("SkyBox");
+}
+
 void Renderer::Add_LightUniform(Pass* pass)
 {
 	GLint AmbientuniformLocation = glGetUniformLocation(pass->getObject()->getMaterial().getShaderInfo().getProgramID(), "Zihao_AmbientLight");
@@ -144,20 +154,29 @@ void Renderer::init(GLsizei width, GLsizei height)
 	ScreenHeight = height;
 	AmbientLightIntense = glm::vec3(0.5, 0.5, 0.5);
 	glViewport(0, 0, width, height);
+
 	//import default texture
 	ImportTexture("white.png");
 	ImportTexture("black.png");
 	ImportTexture("Normal_map.png");
+	Import3DTexture("SkyBox", "right.png", "left.png", "bottom.png", "top.png", "back.png", "front.png");
+
 	//Every obj created in scene uses default material first
 	CreateMaterial("Zihao_DefaultMaterial");
 	Add_Property_Material("Zihao_DefaultMaterial","MyTexture",M_Texture2D,"white" );
 	Add_Property_Material("Zihao_DefaultMaterial", "NormalMap", M_Texture2D,"Normal_map.png");
+
 	//Every Point Light created in scene use the same default light material 
 	CreateMaterial("Zihao_PLightDefaultMaterial","PLight_VertexShader.glsl","PLight_FragmentShader.glsl");
+
+	//init skybox
+	init_SkyBox();
+
 	//editor Camera
 	Camera MainCamera;
 	PushCameraInVector(MainCamera);
 	setCurrentCamera("MainCamera");
+
 	//point light object initialize
 	init_Pointlight();
 //	bindShader2Material("DefaultMaterial", "Test_Vertexshader.glsl", "Test_Fragmentshader.glsl"); //todo
@@ -229,6 +248,27 @@ void Renderer::ImportTexture(char * FileName)
 	TextureArray.push_back(Tex_obj);
 }
 
+void Renderer::Import3DTexture(char * FileName, char* rightImage, char* leftImage, char* topImage, char* bottomImage, char* frontImage, char* backImage)
+{
+	char* TexFile[6] = {rightImage, leftImage, topImage, bottomImage, frontImage, backImage};
+	GLuint id = TextureArray.size();
+	glActiveTexture(GL_TEXTURE0 + id);
+	GLuint TextureID;
+	glGenTextures(1, &TextureID);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, TextureID);
+	for (int i = 0; i < 6; ++i) {
+		QImage Texdata = QGLWidget::convertToGLFormat(QImage(TexFile[i], "PNG"));
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA, Texdata.width(), Texdata.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, Texdata.bits());
+	}
+	glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	Texture* Tex_obj = new Texture(FileName, id, TextureID);
+	TextureArray.push_back(Tex_obj);
+}
+
 void Renderer::setPositionforObject(glm::vec3 position, char * ObjName)
 {
 	bool IsFinded = false;
@@ -240,6 +280,42 @@ void Renderer::setPositionforObject(glm::vec3 position, char * ObjName)
 			(*iter)->Setposition(position);
 		}
 	
+	}
+	if (!IsFinded)
+	{
+		printf("Cannot find the obj");
+	}
+}
+
+void Renderer::setRotationforObject(glm::vec3 rotation, char * ObjName)
+{
+	bool IsFinded = false;
+	for (auto iter = ObjectArray.begin(); iter != ObjectArray.end(); iter++)
+	{
+		if ((*iter)->getName() == ObjName)
+		{
+			IsFinded = true;
+			(*iter)->Setrotaion(rotation);
+		}
+
+	}
+	if (!IsFinded)
+	{
+		printf("Cannot find the obj");
+	}
+}
+
+void Renderer::setScaleforObject(glm::vec3 scale, char * ObjName)
+{
+	bool IsFinded = false;
+	for (auto iter = ObjectArray.begin(); iter != ObjectArray.end(); iter++)
+	{
+		if ((*iter)->getName() == ObjName)
+		{
+			IsFinded = true;
+			(*iter)->Setscale(scale);
+		}
+
 	}
 	if (!IsFinded)
 	{
@@ -270,6 +346,25 @@ void Renderer::BindMaterial2Object(char* MaterialName, Object * obj)
 		printf("Cannot find Material");
 	return;
 	
+}
+
+void Renderer::BindMaterial2Object(char * MaterialName, char * objName)
+{
+	bool FoundObj = false;
+	Object* obj = nullptr;
+	for (auto iter = ObjectArray.begin(); iter != ObjectArray.end(); iter++) {
+		if ((*iter)->getName() == objName) {
+			obj = *iter;
+			FoundObj = true;
+		}
+	}
+	if (!FoundObj)
+	{
+		printf("Cannot find the Object");
+		return;
+	}
+	BindMaterial2Object(MaterialName, obj);
+	return;
 }
 
 Pass * Renderer::AddPass()
@@ -322,6 +417,12 @@ void Renderer::AddObject(Object* obj)
 void Renderer::Add_Zihao_MVP(Pass* pass)
 {
 	glm::mat4 CameraMatrix = pass->getCamera()->getWorldToViewMatrix();
+	if (pass->getObject()->Is_SkyBox())
+	{
+		CameraMatrix[3][0] = 0.0;
+		CameraMatrix[3][1] = 0.0;
+		CameraMatrix[3][2] = 0.0;
+	}
 	glm::mat4 projectionMatrix = glm::perspective(60.0f, ((float)ScreenWidth / ScreenHeight), 0.3f, 100.0f);
 
 	glm::mat4 TransformMatrix = glm::translate(glm::mat4(), pass->getObject()->getTransform().getPosition());
@@ -446,6 +547,18 @@ void Renderer::Bind_Property_Material(char * MaterialName, char * PropertyName, 
 	}
 	if (!IsFound)
 		printf("Cannot find the Material.");
+	return;
+}
+
+void Renderer::ToggleSkyboxforObject(char * objName)
+{
+	for (auto iter = ObjectArray.begin(); iter != ObjectArray.end(); iter++) {
+		if ((*iter)->getName() == objName) {
+			(*iter)->toggleSkyBox();
+			return;
+		}
+	}
+	printf("Cannot Find the Object");
 	return;
 }
 

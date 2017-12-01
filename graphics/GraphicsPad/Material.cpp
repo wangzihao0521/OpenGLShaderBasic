@@ -137,6 +137,10 @@ void Material::AddAllPropertyUniform()
 		{
 			glUniform1i(UniformLocation, (*iter)->getTexture()->getBufferID());
 		}
+		case M_Texture3D:
+		{
+			glUniform1i(UniformLocation, (*iter)->getTexture()->getBufferID());
+		}
 		default:
 			break;
 		}

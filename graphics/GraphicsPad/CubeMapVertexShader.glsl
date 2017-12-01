@@ -8,10 +8,10 @@ in layout(location = 4) vec4 tengent;
 
 out vec3 Texcoord;
 
-uniform mat4 SkyboxTransformMatrix;
+uniform mat4 Zihao_MVP;
 
 void main()
 {
-	gl_Position = SkyboxTransformMatrix * vec4(Position,1.0);
+	gl_Position = Zihao_MVP * vec4(Position,1.0);
 	Texcoord = -Position;
 }

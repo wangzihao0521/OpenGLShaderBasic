@@ -9,10 +9,11 @@ protected:
 	Mesh mesh;
 	Transform transform;
 	Material material;
+	bool IsSkyBox;
 	
 public:
 	Object(char* ObjName,Mesh mesh, Transform trans = Transform()) :
-		name(ObjName),mesh(mesh), transform(trans),material(Material()){}
+		name(ObjName),mesh(mesh), transform(trans),material(Material()),IsSkyBox(false){}
 	void Setposition(glm::vec3 pos) { transform.setPosition(pos); }
 	void Setrotaion(glm::vec3 rot) { transform.setRotation(rot); }
 	void Setscale(glm::vec3 scale) { transform.setScale(scale); }
@@ -22,6 +23,8 @@ public:
 	void setShaderID(GLuint VshaderID, GLuint FshaderID);
 	void setProgramID(GLuint programID);
 	void bindMaterial(Material Material) { material = Material; }
+	void toggleSkyBox() { IsSkyBox = true; }
+	bool Is_SkyBox() { return IsSkyBox; }
 //	ShaderInfo* getShaderInfo() const { return shader; }
 	char* getName() const { return name; }
 	Mesh getMesh() const { return mesh; }

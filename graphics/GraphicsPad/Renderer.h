@@ -27,6 +27,7 @@ private:
 	void PushCameraInVector(Camera cam);
 	void setCurrentCamera(char* camName);
 	void init_Pointlight();
+	void init_SkyBox();
 	GLsizei ScreenWidth;
 	GLsizei ScreenHeight;
 	glm::vec3 AmbientLightIntense;
@@ -44,9 +45,13 @@ public:
 	void CreatePlaneInScene(char* PlaneName);
 	void CreatePointLight(char* LightName, glm::vec3 pos = glm::vec3());
 	void ImportTexture(char* FileName);
+	void Renderer::Import3DTexture(char * TextureName,char* rightImage, char* leftImage, char* topImage, char* bottomImage, char* frontImage, char* backImage);
 	void setPositionforObject(glm::vec3 position, char* ObjName);
+	void setRotationforObject(glm::vec3 rotation, char* ObjName);
+	void setScaleforObject(glm::vec3 scale, char* ObjName);
 	void BindShader2Material(char* VshaderFileName,char* FshaderFileName, Material& material);
 	void BindMaterial2Object(char* MaterialName, Object* obj);
+	void  BindMaterial2Object(char* MaterialName, char* objName);
 	Pass* AddPass();
 	Material CreateMaterial(char* Materialname, char* VshaderFileName = "Test_Vertexshader.glsl", char* FshaderFileName = "Test_Fragmentshader.glsl");
 	Mesh CompleteMeshWithGeo(Shapedata geometry);
@@ -58,6 +63,7 @@ public:
 	void Add_Property_Material(char* MaterialName, char* PropertyName, M_PropertyType PropertyType, glm::vec3 DefaultValue);
 	void Add_Property_Material(char* MaterialName, char* PropertyName, M_PropertyType PropertyType, float DefaultValue);
 	void Bind_Property_Material(char* MaterialName, char* PropertyName, char* TexName);
+	void ToggleSkyboxforObject(char* objName);
 	Camera* getCurrentCamera() { return &CurrentCamera; }
 	PointLight* getCurrentPLight() { return  CurrentPointLight ; }
 	Renderer* getInstatnce() { return renderer; }

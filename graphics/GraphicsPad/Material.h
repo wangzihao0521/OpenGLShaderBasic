@@ -9,6 +9,7 @@
 
 enum M_PropertyType {
 	M_Texture2D = 1,
+	M_Texture3D,
 	M_float,
 	M_vec2,
 	M_vec3
