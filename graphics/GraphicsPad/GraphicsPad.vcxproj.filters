@@ -8,6 +8,7 @@
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Pass.cpp" />
     <ClCompile Include="Material.cpp" />
+    <ClCompile Include="FrameBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MeGlWindow.h" />
@@ -24,6 +25,7 @@
     <ClInclude Include="Transform.h" />
     <ClInclude Include="PointLight.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="FrameBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="VertexShader.glsl" />
@@ -40,5 +42,7 @@
     <None Include="Test_Vertexshader.glsl" />
     <None Include="PLight_VertexShader.glsl" />
     <None Include="PLight_FragmentShader.glsl" />
+    <None Include="ShadowPassVertex.glsl" />
+    <None Include="ShadowPassFragment.glsl" />
   </ItemGroup>
 </Project>

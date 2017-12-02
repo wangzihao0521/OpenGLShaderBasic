@@ -52,6 +52,11 @@ void Renderer::PushCameraInVector(Camera cam)
 	CameraArray.push_back(cam);
 }
 
+void Renderer::PushTexture2Array(Texture * tex)
+{
+	TextureArray.push_back(tex);
+}
+
 void Renderer::setCurrentCamera(char * camName)
 {
 	for (auto iter = CameraArray.begin(); iter != CameraArray.end(); ++iter)
@@ -85,6 +90,18 @@ void Renderer::init_SkyBox()
 	BindMaterial2Object("SkyBox_Material", "SkyBox");
 	setScaleforObject(glm::vec3(50, 50, 50),"SkyBox");
 	ToggleSkyboxforObject("SkyBox");
+}
+
+void Renderer::init_ShadowFrameBuffer()
+{
+	GLuint i = TextureArray.size();
+	ShadowFrameBuffer.init(i,ScreenWidth,ScreenHeight);
+	PushTexture2Array(ShadowFrameBuffer.ColorTexture);
+	PushTexture2Array(ShadowFrameBuffer.DepthTexture);
+	CreateMaterial("M_ShadowPass", "ShadowPassVertex.glsl", "ShadowPassFragment.glsl");
+	Add_Property_Material("M_ShadowPass", "ShadowMap", M_Texture2D, ShadowFrameBuffer.DepthTexture->getName());
+	Add_Property_Material("M_ShadowPass", "Main_Texture", M_Texture2D, "white");
+
 }
 
 void Renderer::Add_LightUniform(Pass* pass)
@@ -146,13 +163,24 @@ Texture* Renderer::FindTextureByName(char * TexName)
 	return nullptr;
 }
 
+Material Renderer::FindMaterialByName(char * MatName)
+{
+	for (auto iter = MaterialArray.begin(); iter != MaterialArray.end(); iter++) {
+		if (iter->getName() == MatName) {
+			return *iter;
+		}
+	}
+	printf("Cannot find Material");
+	return NULL;
+}
+
 void Renderer::init(GLsizei width, GLsizei height)
 {
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
 	ScreenWidth = width;
 	ScreenHeight = height;
-	AmbientLightIntense = glm::vec3(0.5, 0.5, 0.5);
+	AmbientLightIntense = glm::vec3(0.2, 0.2, 0.2);
 	glViewport(0, 0, width, height);
 
 	//import default texture
@@ -172,6 +200,8 @@ void Renderer::init(GLsizei width, GLsizei height)
 	//init skybox
 	init_SkyBox();
 
+	init_ShadowFrameBuffer();
+
 	//editor Camera
 	Camera MainCamera;
 	PushCameraInVector(MainCamera);
@@ -184,13 +214,65 @@ void Renderer::init(GLsizei width, GLsizei height)
 
 }
 
-void Renderer::RenderScene()
+void Renderer::RanderShadowMap()
 {
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, ShadowFrameBuffer.id);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
+	if (CurrentPointLight == nullptr)
+	{	
+		castingShadow = false;
+		return;
+	}
+	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,ShadowFrameBuffer.ColorTexture->getTextureID(), 0);
+	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, ShadowFrameBuffer.DepthTexture->getTextureID(), 0);
+	GLuint status = glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER);
+	assert(status == GL_FRAMEBUFFER_COMPLETE);
+	LightCamera.setPosition(CurrentPointLight->getPosition());
+	for (auto iter = ObjectArray.begin(); iter != ObjectArray.end(); iter++)
+	{		
+		if ((*iter)->Is_CastShadow())
+		{			
+			Pass* p = new Pass(&LightCamera);
+			p->setObject(*iter);
+			ExecutePass(p);
+			castingShadow = true;
+			delete p;
+		}
+	}
+}
+
+void Renderer::RenderScene()
+{
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+	glViewport(0, 0, ScreenWidth, ScreenHeight);
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LEQUAL);
 	for (auto iter = PassArray.begin(); iter != PassArray.end(); iter++)
 	{
 		ExecutePass(*iter);
+	}
+	if (castingShadow) 
+	{
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+		for (auto iter = ObjectArray.begin(); iter != ObjectArray.end(); iter++)
+		{
+			if ((*iter)->Is_ReceiveShadow() && (*iter)->getName()!= "SkyBox")
+			{
+				Material mat = FindMaterialByName("M_ShadowPass");
+				Object obj = **iter;
+				obj.bindMaterial(mat);
+				if ((*iter)->getMaterial().FindPropertyByName("MyTexture")->getTexture()->getName() != "white.png")
+					Bind_Property_Material("M_ShadowPass", "Main_Texture", (*iter)->getMaterial().FindPropertyByName("MyTexture")->getTexture()->getName());
+				Pass* p = new Pass(&CurrentCamera);
+				p->setObject(&obj);
+				ExecutePass(p);
+				delete p;
+			}
+		}
+		glDisable(GL_BLEND);
 	}
 }
 
@@ -432,6 +514,8 @@ void Renderer::Add_Zihao_MVP(Pass* pass)
 	glm::mat4 ScaleMatrix = glm::scale(glm::mat4(), pass->getObject()->getTransform().getScale());
 	glm::mat4 Zihao_M2W = TransformMatrix * RotationMatrix * ScaleMatrix;
 	glm::mat4 Zihao_MVP = projectionMatrix * CameraMatrix * Zihao_M2W;
+
+	glm::mat4 Zihao_Light_MatrixW2P = projectionMatrix * LightCamera.getWorldToViewMatrix();
 	
 	
 	GLint M2WuniformLocation = glGetUniformLocation(pass->getObject()->getMaterial().getShaderInfo().getProgramID(), "Zihao_M2W");
@@ -440,7 +524,9 @@ void Renderer::Add_Zihao_MVP(Pass* pass)
 	GLint MVPuniformLocation = glGetUniformLocation(pass->getObject()->getMaterial().getShaderInfo().getProgramID(),"Zihao_MVP");
 	if(MVPuniformLocation>=0)
 		glUniformMatrix4fv(MVPuniformLocation, 1, GL_FALSE, &Zihao_MVP[0][0]);
-	
+	GLint LightW2P = glGetUniformLocation(pass->getObject()->getMaterial().getShaderInfo().getProgramID(), "Zihao_LightMatrix_W2P");
+	if (LightW2P >= 0)
+		glUniformMatrix4fv(LightW2P, 1, GL_FALSE, &Zihao_Light_MatrixW2P[0][0]);
 
 }
 

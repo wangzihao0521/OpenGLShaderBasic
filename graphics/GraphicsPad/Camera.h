@@ -4,8 +4,8 @@
 class Camera
 {
 public:
-	Camera():
-		name("MainCamera"),
+	Camera(char* CamName = "MainCamera"):
+		name(CamName),
 		Position(0.0f,0.0f,0.0f),
 		ViewDir(0.0f,0.0f,-1.0f),
 		UpDir(0.0f,1.0f,0.0f),
@@ -52,7 +52,7 @@ protected:
 	char* name;
 	glm::vec3 Position;
 	glm::vec3 ViewDir;
-	const glm::vec3 UpDir;
+	glm::vec3 UpDir;
 	static const float Movement_speed;
 	static const float Rotation_speed;
 	glm::vec3 TengentDir;

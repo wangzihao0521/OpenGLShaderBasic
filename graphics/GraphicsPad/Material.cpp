@@ -41,7 +41,7 @@ M_Property * Material::FindPropertyByName(char * P_name)
 {
 	for (auto iter = PropertyArray.begin(); iter != PropertyArray.end(); ++iter)
 	{
-		if ((*iter)->getName() == P_name);
+		if ((*iter)->getName() == P_name)
 		{
 			return *iter;
 		}

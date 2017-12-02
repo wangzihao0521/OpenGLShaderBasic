@@ -1,3 +1,5 @@
+#ifndef ZIHAO_TEXTURE
+#define ZIHAO_TEXTURE
 
 
 class Texture {
@@ -11,6 +13,8 @@ public:
 
 	char* getName() const { return name; }
 	GLuint getBufferID() const { return BufferID; }
-	GLuint getTextureID() const { return TextureID; }
+	GLuint getTextureID() { return TextureID; }
 };
 
+
+#endif 

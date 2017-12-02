@@ -366,6 +366,7 @@ void MeGlWindow::initializeGL()
 void MeGlWindow::paintGL()
 {
 	glViewport(0, 0, width(), height());
+	renderer()->RanderShadowMap();
 	renderer()->RenderScene();
 	/*
 //	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
@@ -709,16 +710,16 @@ void MeGlWindow::keyPressEvent(QKeyEvent* e)
 		renderer()->getCurrentCamera()->rotate_down();
 		break;
 	case Qt::Key::Key_T:
-		LightCamera.rotate_left();
+		renderer()->getLightCamera()->rotate_left();
 		break;
 	case Qt::Key::Key_Y:
-		LightCamera.rotate_right();
+		renderer()->getLightCamera()->rotate_right();
 		break;
 	case Qt::Key::Key_G:
-		LightCamera.rotate_up();
+		renderer()->getLightCamera()->rotate_up();
 		break;
 	case Qt::Key::Key_H:
-		LightCamera.rotate_down();
+		renderer()->getLightCamera()->rotate_down();
 		break;
 	case Qt::Key::Key_I:
 		if (PointLight* p = renderer()->getCurrentPLight())		

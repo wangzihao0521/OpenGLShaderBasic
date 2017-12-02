@@ -40,9 +40,10 @@ void main()
 
 	vec3 reflectionVec = reflect(-LightVector,WorldNormal);
 	vec3 viewdirection = normalize(Zihao_ViewPosition_WS - WorldPosition);
-	float specularIntensity = pow(dot(viewdirection, reflectionVec),50);
+	float specularIntensity =  pow(clamp(dot(viewdirection, reflectionVec),0,1),50);
 	vec3 SpecularLight = specularIntensity * vec3(1.0,0.0,0.0);
 
 	pixelcolor = vec4(AmbientLight + DiffuseLight + clamp(SpecularLight,0,1),1.0);
+//	pixelcolor = vec4(WorldNormal,1);
 //	pixelcolor = normalmapcolor;
 }
