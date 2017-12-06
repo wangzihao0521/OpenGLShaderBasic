@@ -6,6 +6,8 @@
 #include <QtGui\qtextedit.h>
 #include <QtGui\qlabel.h>
 #include <QtGui\qhboxlayout>
+#include <vector>
+#include <string>
 
 class FunctionButton : public QWidget 
 {
@@ -13,7 +15,7 @@ class FunctionButton : public QWidget
 
 	QPushButton* button;
 	QLabel* label;
-	QTextEdit* textBox;
+	std::vector<QTextEdit*> textBox;
 
 private slots:
 	void ButtonIsClicked();
@@ -22,8 +24,10 @@ signals:
 	void clicked();
 
 public:
-	FunctionButton(QString functionName, QString buttonText = "Do it");
-	QString getArguements() { return textBox->toPlainText(); }
+	FunctionButton(QString functionName, QString buttonText = "Do it", int ArguementAmount = 1);
+	QString getArguement() { return textBox[0]->toPlainText(); }
+	std::vector<QString> getArguements();
+	void setText(std::string text1, std::string text2, std::string text3);
 };
 
 

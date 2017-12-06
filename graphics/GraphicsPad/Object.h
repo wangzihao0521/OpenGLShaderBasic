@@ -24,7 +24,7 @@ public:
 	Object(char* ObjName,Mesh mesh, Transform trans = Transform(),ObjectType t = Non_Light) :
 		name(ObjName),mesh(mesh), transform(trans),material(Material()),IsSkyBox(false),castShadow(true),receiveShadow(true),type(t){}
 	void Setposition(glm::vec3 pos) { transform.setPosition(pos); }
-	void Setrotaion(glm::vec3 rot) { transform.setRotation(rot); }
+	void Setrotation(glm::vec3 rot) { transform.setRotation(rot); }
 	void Setscale(glm::vec3 scale) { transform.setScale(scale); }
 	void translate(glm::vec3 Vec3) { transform.tranlate(Vec3); }
 	void rotate(glm::vec3 Vec3) { transform.rotate(Vec3); }

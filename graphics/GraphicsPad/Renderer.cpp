@@ -380,6 +380,13 @@ void Renderer::setPositionforObject(glm::vec3 position, char * ObjName)
 	}
 }
 
+void Renderer::setPositionforCurrentObject(glm::vec3 position)
+{
+	if (CurrentObject == nullptr)
+		return;
+	CurrentObject->Setposition(position);
+}
+
 void Renderer::setRotationforObject(glm::vec3 rotation, char * ObjName)
 {
 	bool IsFinded = false;
@@ -388,7 +395,7 @@ void Renderer::setRotationforObject(glm::vec3 rotation, char * ObjName)
 		if ((*iter)->getName() == ObjName)
 		{
 			IsFinded = true;
-			(*iter)->Setrotaion(rotation);
+			(*iter)->Setrotation(rotation);
 		}
 
 	}
@@ -396,6 +403,13 @@ void Renderer::setRotationforObject(glm::vec3 rotation, char * ObjName)
 	{
 		printf("Cannot find the obj");
 	}
+}
+
+void Renderer::setRotationforCurrentObject(glm::vec3 rotation)
+{
+	if (CurrentObject == nullptr)
+		return;
+	CurrentObject->Setrotation(rotation);
 }
 
 void Renderer::setScaleforObject(glm::vec3 scale, char * ObjName)
@@ -414,6 +428,13 @@ void Renderer::setScaleforObject(glm::vec3 scale, char * ObjName)
 	{
 		printf("Cannot find the obj");
 	}
+}
+
+void Renderer::setScaleforCurrentObject(glm::vec3 scale)
+{
+	if (CurrentObject == nullptr)
+		return;
+	CurrentObject->Setscale(scale);
 }
 
 void Renderer::BindShader2Material(char* VshaderFileName, char* FshaderFileName, Material& material)
@@ -439,6 +460,20 @@ void Renderer::BindMaterial2Object(char* MaterialName, Object * obj)
 		printf("Cannot find Material");
 	return;
 	
+}
+
+void Renderer::BindMaterial2CurrentObject(char * MaterialName)
+{
+	if (CurrentObject == nullptr)
+		return;
+	for (auto iter = MaterialArray.begin(); iter != MaterialArray.end(); iter++) {
+		if (iter->getName() == MaterialName) {
+			CurrentObject->bindMaterial(*iter);
+			return;
+		}
+	}
+	printf("Cannot find Material");
+	return;
 }
 
 void Renderer::BindMaterial2Object(char * MaterialName, char * objName)
@@ -645,6 +680,28 @@ void Renderer::Bind_Property_Material(char * MaterialName, char * PropertyName, 
 	if (!IsFound)
 		printf("Cannot find the Material.");
 	return;
+}
+
+void Renderer::Bind_Property_CurrentMaterial(char * PropertyName, char * TexName)
+{
+	if (CurrentObject == nullptr)
+		return;
+	 
+	M_Property* p = CurrentObject->getMaterial().FindPropertyByName(PropertyName);
+	Texture* tex = FindTextureByName(TexName);
+	if (p && tex)
+	{
+		if (p->getType() != M_Texture2D)
+		{
+			printf("Type is wrong");
+			return;
+		}
+		else
+			p->setTexture(tex);
+		return;
+	}
+	else
+		return;	
 }
 
 void Renderer::ToggleSkyboxforObject(char * objName)

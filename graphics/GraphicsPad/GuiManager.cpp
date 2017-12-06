@@ -9,6 +9,11 @@ void GuiManager::SetAllConnections()
 	connect(CreatePlane, SIGNAL(clicked()), this, SLOT(CreatePlaneInScene()));
 	connect(CreatePointLight, SIGNAL(clicked()), this, SLOT(CreatePointLightInScene()));
 	connect(FB_ImportTexture, SIGNAL(clicked()), this, SLOT(ImportTexture()));
+	connect(PropertyManager->Position, SIGNAL(clicked()), this, SLOT(setPositionForCurrentObject()));
+	connect(PropertyManager->Rotation, SIGNAL(clicked()), this, SLOT(setRotationForCurrentObject()));
+	connect(PropertyManager->Scale, SIGNAL(clicked()), this, SLOT(setScaleForCurrentObject()));
+	connect(PropertyManager->BindMaterial, SIGNAL(clicked()), this, SLOT(BindMaterialToCurrentObject()));
+	connect(PropertyManager->BindProperty, SIGNAL(clicked()), this, SLOT(BindPropertyToCurrentMaterial()));
 }
 
 void GuiManager::RefreshPropertyManager()
@@ -42,7 +47,7 @@ GuiManager::GuiManager()
 
 void GuiManager::CreateCubeInScene()
 {
-	QString Arguement = CreateCube->getArguements();
+	QString Arguement = CreateCube->getArguement();
 	QByteArray* ba = new QByteArray(Arguement.toLatin1());
 	if (Arguement != "")
 	{
@@ -53,7 +58,7 @@ void GuiManager::CreateCubeInScene()
 
 void GuiManager::CreatePlaneInScene()
 {
-	QString Arguement = CreatePlane->getArguements();
+	QString Arguement = CreatePlane->getArguement();
 	QByteArray* ba = new QByteArray(Arguement.toLatin1());
 	if (Arguement != "")
 	{
@@ -64,7 +69,7 @@ void GuiManager::CreatePlaneInScene()
 
 void GuiManager::CreatePointLightInScene()
 {
-	QString Arguement = CreatePointLight->getArguements();
+	QString Arguement = CreatePointLight->getArguement();
 	QByteArray* ba = new QByteArray(Arguement.toLatin1());
 	if (Arguement != "")
 	{
@@ -75,10 +80,81 @@ void GuiManager::CreatePointLightInScene()
 
 void GuiManager::ImportTexture()
 {
-	QString Arguement = FB_ImportTexture->getArguements();
+	QString Arguement = FB_ImportTexture->getArguement();
 	QByteArray* ba = new QByteArray(Arguement.toLatin1());
 	if (Arguement != "")
 	{
 		MyWindow->renderer()->ImportTexture(ba->data());
 	}
+}
+
+void GuiManager::setPositionForCurrentObject()
+{
+	std::vector<QString> Arguements = PropertyManager->Position->getArguements();
+	for (auto iter = Arguements.begin(); iter != Arguements.end(); iter++)
+	{
+		if (*iter == "")
+			return;
+	}
+	glm::vec3 newPos = glm::vec3();
+	newPos.x = Arguements[0].toFloat();
+	newPos.y = Arguements[1].toFloat();
+	newPos.z = Arguements[2].toFloat();
+
+	MyWindow->renderer()->setPositionforCurrentObject(newPos);
+}
+
+void GuiManager::setRotationForCurrentObject()
+{
+	std::vector<QString> Arguements = PropertyManager->Rotation->getArguements();
+	for (auto iter = Arguements.begin(); iter != Arguements.end(); iter++)
+	{
+		if (*iter == "")
+			return;
+	}
+	glm::vec3 newRot = glm::vec3();
+	newRot.x = Arguements[0].toFloat();
+	newRot.y = Arguements[1].toFloat();
+	newRot.z = Arguements[2].toFloat();
+
+	MyWindow->renderer()->setRotationforCurrentObject(newRot);
+}
+
+void GuiManager::setScaleForCurrentObject()
+{
+	std::vector<QString> Arguements = PropertyManager->Scale->getArguements();
+	for (auto iter = Arguements.begin(); iter != Arguements.end(); iter++)
+	{
+		if (*iter == "")
+			return;
+	}
+	glm::vec3 newScale = glm::vec3();
+	newScale.x = Arguements[0].toFloat();
+	newScale.y = Arguements[1].toFloat();
+	newScale.z = Arguements[2].toFloat();
+
+	MyWindow->renderer()->setScaleforCurrentObject(newScale);
+}
+
+void GuiManager::BindMaterialToCurrentObject()
+{
+	QString Arguement = FB_ImportTexture->getArguement();
+	QByteArray* ba = new QByteArray(Arguement.toLatin1());
+	if (Arguement != "")
+	{
+		MyWindow->renderer()->BindMaterial2CurrentObject(ba->data());
+	}
+}
+
+void GuiManager::BindPropertyToCurrentMaterial()
+{
+	std::vector<QString> Arguements = PropertyManager->Scale->getArguements();
+	for (auto iter = Arguements.begin(); iter != Arguements.end(); iter++)
+	{
+		if (*iter == "")
+			return;
+	}
+	QByteArray* ba0 = new QByteArray(Arguements[0].toLatin1());
+	QByteArray* ba1 = new QByteArray(Arguements[1].toLatin1());
+	MyWindow->renderer()->Bind_Property_CurrentMaterial(ba0->data(), ba1->data());
 }

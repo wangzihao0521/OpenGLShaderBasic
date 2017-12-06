@@ -59,7 +59,7 @@ protected:
 	char* VshaderFileName;
 	char* FshaderFileName;
 	ShaderInfo shaderinfo;
-	std::vector<M_Property*> PropertyArray;
+	
 //	std::vector<Texture*> TextureArray;
 //	std::vector<glm::vec2> Vec2Array;
 //	std::vector<glm::vec3> Vec3Array;
@@ -67,6 +67,9 @@ protected:
 	
 
 public:
+
+	std::vector<M_Property*> PropertyArray;
+
 	Material(char* Materialname = "DefaultMaterial",char* Vshaderfilename = nullptr, char* Fshaderfilename = nullptr) :
 		name(Materialname),VshaderFileName(Vshaderfilename), FshaderFileName(Fshaderfilename),Model2WorldMatrix(glm::mat4()),shaderinfo(ShaderInfo()) {};
 
@@ -83,10 +86,7 @@ public:
 	void AddProperty(M_Property* property) { PropertyArray.push_back(property); }
 	void AddAllPropertyUniform();
 	glm::mat4 Model2WorldMatrix;
-//	void AddTexture(Texture* tex) { TextureArray.push_back(tex); }
-//	void AddFloat(float f) { FloatArray.push_back(f); }
-//	void AddVec2(glm::vec2 value) { Vec2Array.push_back(value); }
-//	void AddVec3(glm::vec3 value) { Vec3Array.push_back(value); }
+
 };
 
 

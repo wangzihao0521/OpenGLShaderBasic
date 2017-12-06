@@ -22,6 +22,11 @@ private slots:
 	void CreatePlaneInScene();
 	void CreatePointLightInScene();
 	void ImportTexture();
+	void setPositionForCurrentObject();
+	void setRotationForCurrentObject();
+	void setScaleForCurrentObject();
+	void BindMaterialToCurrentObject();
+	void BindPropertyToCurrentMaterial();
 
 public:
 	GuiManager();

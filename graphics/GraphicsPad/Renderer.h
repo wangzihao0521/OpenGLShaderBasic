@@ -57,10 +57,14 @@ public:
 	void ImportTexture(char* FileName);
 	void Renderer::Import3DTexture(char * TextureName,char* rightImage, char* leftImage, char* topImage, char* bottomImage, char* frontImage, char* backImage);
 	void setPositionforObject(glm::vec3 position, char* ObjName);
+	void setPositionforCurrentObject(glm::vec3 position);
 	void setRotationforObject(glm::vec3 rotation, char* ObjName);
+	void setRotationforCurrentObject(glm::vec3 rotation);
 	void setScaleforObject(glm::vec3 scale, char* ObjName);
+	void setScaleforCurrentObject(glm::vec3 scale);
 	void BindShader2Material(char* VshaderFileName,char* FshaderFileName, Material& material);
 	void BindMaterial2Object(char* MaterialName, Object* obj);
+	void BindMaterial2CurrentObject(char* MaterialName);
 	void  BindMaterial2Object(char* MaterialName, char* objName);
 	Pass* AddPass();
 	Material CreateMaterial(char* Materialname, char* VshaderFileName = "Test_Vertexshader.glsl", char* FshaderFileName = "Test_Fragmentshader.glsl");
@@ -73,6 +77,7 @@ public:
 	void Add_Property_Material(char* MaterialName, char* PropertyName, M_PropertyType PropertyType, glm::vec3 DefaultValue);
 	void Add_Property_Material(char* MaterialName, char* PropertyName, M_PropertyType PropertyType, float DefaultValue);
 	void Bind_Property_Material(char* MaterialName, char* PropertyName, char* TexName);
+	void Bind_Property_CurrentMaterial(char* PropertyName, char* TexName);
 	void ToggleSkyboxforObject(char* objName);
 	Camera* getCurrentCamera() { return &CurrentCamera; }
 	Camera* getLightCamera() { return &LightCamera; }
