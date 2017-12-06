@@ -15,7 +15,6 @@ protected:
 //	void senddatatoRenderer();
 //	void installshaders();
 	void UserInput();
-	void keyPressEvent(QKeyEvent*);
 	void LoadCubeMap();
 	void DrawObjects(Camera & camera);
 //	bool checkShaderStatus(GLuint ShaderID);
@@ -25,8 +24,10 @@ protected:
 
 	QTimer	*Mytimer;
 	Renderer* MyRenderer;
-	Renderer* renderer() { return MyRenderer->getInstatnce(); }
+	
 public:
+	void keyPressEvent(QKeyEvent*);
+	Renderer* renderer() { return MyRenderer->getInstatnce(); }
 };
 
 #endif

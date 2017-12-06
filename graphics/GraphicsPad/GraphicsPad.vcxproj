@@ -151,6 +151,11 @@
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="FrameBuffer.cpp" />
+    <ClCompile Include="FunctionButton.cpp" />
+    <ClCompile Include="FunctionButton_moc.cpp" />
+    <ClCompile Include="GuiManager.cpp" />
+    <ClCompile Include="GuiManager_moc.cpp" />
+    <ClCompile Include="Gui_Property_Manager.cpp" />
     <ClCompile Include="Mainer.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="MeGlWindow.cpp" />
@@ -161,6 +166,9 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="FrameBuffer.h" />
+    <ClInclude Include="FunctionButton.h" />
+    <ClInclude Include="GuiManager.h" />
+    <ClInclude Include="Gui_Property_Manager.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="MeGlWindow.h" />
     <ClInclude Include="Mesh.h" />

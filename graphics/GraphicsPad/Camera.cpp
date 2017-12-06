@@ -57,18 +57,18 @@ void Camera::rotate_up()
 {
 	glm::mat4 rotator = glm::rotate(Rotation_speed, TengentDir);
 	ViewDir = glm::mat3(rotator) * ViewDir;
-	if (ViewDir.z > 0)
-		UpDir = glm::vec3(0, -1, 0);
-	if (ViewDir.z < 0)
-		UpDir = glm::vec3(0, 1, 0);
+//	if (ViewDir.z > 0)
+//		UpDir = glm::vec3(0, -1, 0);
+//	if (ViewDir.z < 0)
+//		UpDir = glm::vec3(0, 1, 0);
 }
 
 void Camera::rotate_down()
 {
 	glm::mat4 rotator = glm::rotate(-Rotation_speed, TengentDir);
 	ViewDir = glm::mat3(rotator) * ViewDir;
-	if (ViewDir.z > 0)
-		UpDir = glm::vec3(0, -1, 0);
-	if (ViewDir.z < 0)
-		UpDir = glm::vec3(0, 1, 0);
+//	if (ViewDir.z > 0)
+//		UpDir = glm::vec3(0, -1, 0);
+//	if (ViewDir.z < 0)
+//		UpDir = glm::vec3(0, 1, 0);
 }

@@ -9,6 +9,11 @@
     <ClCompile Include="Pass.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="FrameBuffer.cpp" />
+    <ClCompile Include="GuiManager.cpp" />
+    <ClCompile Include="FunctionButton.cpp" />
+    <ClCompile Include="FunctionButton_moc.cpp" />
+    <ClCompile Include="GuiManager_moc.cpp" />
+    <ClCompile Include="Gui_Property_Manager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MeGlWindow.h" />
@@ -26,6 +31,9 @@
     <ClInclude Include="PointLight.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="FrameBuffer.h" />
+    <ClInclude Include="GuiManager.h" />
+    <ClInclude Include="FunctionButton.h" />
+    <ClInclude Include="Gui_Property_Manager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="VertexShader.glsl" />

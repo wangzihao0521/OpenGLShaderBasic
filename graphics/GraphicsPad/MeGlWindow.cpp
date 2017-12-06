@@ -351,6 +351,7 @@ void MeGlWindow::installshaders()
 */
 void MeGlWindow::initializeGL()
 {
+	setMinimumSize(1440, 810);
 	glewInit();
 	renderer()->init(width(),height());
 	UserInput();
@@ -366,6 +367,7 @@ void MeGlWindow::initializeGL()
 void MeGlWindow::paintGL()
 {
 	glViewport(0, 0, width(), height());
+	renderer()->setScreenSize(width(),height());
 	renderer()->RanderShadowMap();
 	renderer()->RenderScene();
 	/*
@@ -664,14 +666,14 @@ void MeGlWindow::DrawObjects(Camera & camera){
 
 void MeGlWindow::UserInput()
 {
-	renderer()->CreateCubeInScene("Cube1");
-	renderer()->CreateCubeInScene("Cube2");
-	renderer()->setPositionforObject(glm::vec3(-3, 0, -5), "Cube1");
-	renderer()->setPositionforObject(glm::vec3(3, 0, -5), "Cube2");
-	renderer()->CreatePlaneInScene("Plane1");
-	renderer()->setPositionforObject(glm::vec3(0, -2, -5), "Plane1");
-	renderer()->CreatePointLight("PL1", glm::vec3(0.0f, 3.0f, -5.0f));
-	renderer()->ImportTexture("MyTexture.png");
+//	renderer()->CreateCubeInScene("Cube1");
+//	renderer()->CreateCubeInScene("Cube2");
+//	renderer()->setPositionforObject(glm::vec3(-3, 0, -5), "Cube1");
+//	renderer()->setPositionforObject(glm::vec3(3, 0, -5), "Cube2");
+//	renderer()->CreatePlaneInScene("Plane1");
+//	renderer()->setPositionforObject(glm::vec3(0, -2, -5), "Plane1");
+//	renderer()->CreatePointLight("PL1", glm::vec3(0.0f, 3.0f, -5.0f));
+//	renderer()->ImportTexture("MyTexture.png");
 	
 }
 

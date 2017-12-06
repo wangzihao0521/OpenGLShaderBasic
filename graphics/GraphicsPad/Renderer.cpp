@@ -7,6 +7,7 @@ Renderer* Renderer::renderer = new Renderer();
 Camera Renderer::CurrentCamera = Camera();
 Object* Renderer::P_light_obj = nullptr;
 PointLight* Renderer::CurrentPointLight = nullptr;
+Object* Renderer::CurrentObject = nullptr;
 
 GLuint Renderer::bindandfillvertexbuffer(Shapedata geometry)
 {
@@ -78,6 +79,7 @@ void Renderer::init_Pointlight()
 	Mesh m = CompleteMeshWithGeo(CubeGeometry);
 	Object* P = new Object("", m);
 	P->Setscale(glm::vec3(0.2f, 0.2f, 0.2f));
+	P->setType(Light);
 	BindMaterial2Object("Zihao_DefaultMaterial", P);
 	P_light_obj = P;
 }
@@ -140,7 +142,8 @@ void Renderer::ExecutePass(Pass* pass)
 	glBindVertexArray(pass->getObject()->getObjectID());
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, pass->getObject()->getMesh().indicesBufferID);
 	Add_Zihao_MVP(pass);
-	Add_LightUniform(pass);
+	if (CurrentPointLight)
+		Add_LightUniform(pass);
 	Add_AllMaterialProperty(&pass->getObject()->getMaterial());
 	glDrawElements(GL_TRIANGLES, pass->getObject()->getGeometry().numIndices, GL_UNSIGNED_SHORT, 0);
 }
@@ -203,7 +206,7 @@ void Renderer::init(GLsizei width, GLsizei height)
 	init_ShadowFrameBuffer();
 
 	//editor Camera
-	Camera MainCamera;
+	Camera MainCamera("MainCamera",glm::vec3(0,0,5));
 	PushCameraInVector(MainCamera);
 	setCurrentCamera("MainCamera");
 
@@ -212,6 +215,12 @@ void Renderer::init(GLsizei width, GLsizei height)
 //	bindShader2Material("DefaultMaterial", "Test_Vertexshader.glsl", "Test_Fragmentshader.glsl"); //todo
 
 
+}
+
+void Renderer::setScreenSize(GLsizei width, GLsizei height)
+{
+	ScreenHeight = height;
+	ScreenWidth = width;
 }
 
 void Renderer::RanderShadowMap()
@@ -285,7 +294,7 @@ void Renderer::CreateCubeInScene(char* CubeName)
 	BindMaterial2Object("Zihao_DefaultMaterial",cube);
 	Pass* p = AddPass();
 	p->setObject(cube);
-
+	CurrentObject = cube;
 
 }
 
@@ -298,18 +307,20 @@ void Renderer::CreatePlaneInScene(char* PlaneName)
 	BindMaterial2Object("Zihao_DefaultMaterial", Plane);
 	Pass* p = AddPass();
 	p->setObject(Plane);
+	CurrentObject = Plane;
 }
 
 void Renderer::CreatePointLight(char * LightName, glm::vec3 pos)
 {
 	PointLight* P_light = new PointLight();
-	Object* obj_P_light = new Object(LightName, P_light_obj->getMesh(),P_light_obj->getTransform());
+	Object* obj_P_light = new Object(LightName, P_light_obj->getMesh(),P_light_obj->getTransform(),Light);
 	obj_P_light->Setposition(pos);
 	BindMaterial2Object("Zihao_PLightDefaultMaterial", obj_P_light);
 	P_light->setObject(obj_P_light);
 	Pass* p = AddPass();
 	p->setObject(obj_P_light);
 	CurrentPointLight = P_light;
+	CurrentObject = obj_P_light;
 }
 
 void Renderer::ImportTexture(char * FileName)

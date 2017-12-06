@@ -4,9 +4,9 @@
 class Camera
 {
 public:
-	Camera(char* CamName = "MainCamera"):
+	Camera(char* CamName = "MainCamera",glm::vec3 pos = glm::vec3()):
 		name(CamName),
-		Position(0.0f,0.0f,0.0f),
+		Position(pos),
 		ViewDir(0.0f,0.0f,-1.0f),
 		UpDir(0.0f,1.0f,0.0f),
 		TengentDir(1.0f,0.0f,0.0f)
@@ -38,14 +38,14 @@ public:
 	void rotate_up();
 	void rotate_down();
 
-	Camera& operator = (const Camera cam)
+	void operator = (const Camera cam)
 	{
-		Camera camera;
-		camera.name = cam.name;
-		camera.Position = cam.Position;
-		camera.ViewDir = cam.ViewDir;
-		camera.TengentDir = cam.TengentDir;
-		return camera;
+//		Camera camera;
+		name = cam.name;
+		Position = cam.Position;
+		ViewDir = cam.ViewDir;
+		TengentDir = cam.TengentDir;
+//		return camera;
 	}
 
 protected:

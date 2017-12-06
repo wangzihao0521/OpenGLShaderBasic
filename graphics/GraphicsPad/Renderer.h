@@ -10,13 +10,14 @@
 
 class Renderer {
 protected:
+	static Renderer* renderer;
 	std::vector<Object*> ObjectArray;
 	std::vector<Mesh> MeshArray;
-	std::vector<Material> MaterialArray;
-	static Renderer* renderer;
+	std::vector<Material> MaterialArray;	
 	std::vector<Camera> CameraArray;
 	static Camera CurrentCamera;
 	static PointLight* CurrentPointLight;
+	static Object* CurrentObject;
 	static Object* P_light_obj;
 	std::vector<Pass*> PassArray;
 	std::vector<Texture*> TextureArray;
@@ -47,6 +48,7 @@ public:
 	Renderer() {};
 	Object* CreateObject(char* ObjName,Shapedata geo);	
 	void init(GLsizei width,GLsizei height);
+	void setScreenSize(GLsizei width, GLsizei height);
 	void RanderShadowMap();
 	void RenderScene();
 	void CreateCubeInScene(char* CubeName);
@@ -75,6 +77,7 @@ public:
 	Camera* getCurrentCamera() { return &CurrentCamera; }
 	Camera* getLightCamera() { return &LightCamera; }
 	PointLight* getCurrentPLight() { return  CurrentPointLight ; }
+	Object* getCurrentObject() { return CurrentObject; }
 	Renderer* getInstatnce() { return renderer; }
 
 	
