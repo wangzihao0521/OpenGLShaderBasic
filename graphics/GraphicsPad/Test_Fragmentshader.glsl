@@ -28,7 +28,7 @@ void main()
 	vec3 WorldPosition = vec3(Zihao_M2W * vec4(VertexPosition,1.0));
 	vec3 LightVector = normalize(Zihao_LightPosition_WS - WorldPosition);
 	float distance = length(Zihao_LightPosition_WS - WorldPosition);
-	float attenuation = 1 / (Zihao_Attenuation * pow(distance,2));
+	float attenuation = mix(0,1 / (Zihao_Attenuation * pow(distance,2)),Zihao_Attenuation * 100);
 
 	vec3 PreWorldNormal = vec3 (transpose(inverse(Zihao_M2W)) * vec4(vertexnormal,0));
 	vec3 ActualModelNormal = mix(vertexnormal,ModelNormal,clamp(dot(LightVector, PreWorldNormal)*10000,0,1));
@@ -41,7 +41,7 @@ void main()
 	vec3 reflectionVec = reflect(-LightVector,WorldNormal);
 	vec3 viewdirection = normalize(Zihao_ViewPosition_WS - WorldPosition);
 	float specularIntensity =  pow(clamp(dot(viewdirection, reflectionVec),0,1),50);
-	vec3 SpecularLight = specularIntensity * vec3(1.0,0.0,0.0);
+	vec3 SpecularLight = attenuation * specularIntensity * vec3(1.0,0.0,0.0);
 
 	pixelcolor = vec4(AmbientLight + DiffuseLight + clamp(SpecularLight,0,1),1.0);
 //	pixelcolor = vec4(WorldNormal,1);

@@ -2,6 +2,8 @@
 #include "GL\glew.h"
 #include "PointLight.h"
 
+#include <unordered_map>
+
 Renderer* Renderer::renderer = new Renderer();
 
 Camera Renderer::CurrentCamera = Camera();
@@ -155,7 +157,7 @@ Texture* Renderer::FindTextureByName(char * TexName)
 	F_name += ".png";
 	for (auto iter = TextureArray.begin(); iter != TextureArray.end(); iter++)
 	{
-		if ((*iter)->getName() == TexName || (*iter)->getName() == F_name)
+		if (strcmp((*iter)->getName(),TexName) == 0 || strcmp((*iter)->getName(), F_name.c_str()) == 0)
 		{
 			IsFound = true;
 			return *iter;
@@ -169,7 +171,7 @@ Texture* Renderer::FindTextureByName(char * TexName)
 Material Renderer::FindMaterialByName(char * MatName)
 {
 	for (auto iter = MaterialArray.begin(); iter != MaterialArray.end(); iter++) {
-		if (iter->getName() == MatName) {
+		if (strcmp(iter->getName(), MatName) == 0) {
 			return *iter;
 		}
 	}
@@ -228,7 +230,8 @@ void Renderer::RanderShadowMap()
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, ShadowFrameBuffer.id);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
-	if (CurrentPointLight == nullptr)
+	castingShadow = false;
+	if (CurrentPointLight == nullptr || CurrentPointLight-> getObject()->Is_CastShadow()==false)
 	{	
 		castingShadow = false;
 		return;
@@ -247,8 +250,10 @@ void Renderer::RanderShadowMap()
 			ExecutePass(p);
 			castingShadow = true;
 			delete p;
+			
 		}
-	}
+		
+	}	
 }
 
 void Renderer::RenderScene()
@@ -273,7 +278,9 @@ void Renderer::RenderScene()
 				Material mat = FindMaterialByName("M_ShadowPass");
 				Object obj = **iter;
 				obj.bindMaterial(mat);
-				if ((*iter)->getMaterial().FindPropertyByName("MyTexture")->getTexture()->getName() != "white.png")
+				if ((*iter)->getMaterial().FindPropertyByName("MyTexture") == nullptr)
+					Bind_Property_Material("M_ShadowPass", "Main_Texture", "white.png");
+				else if ((*iter)->getMaterial().FindPropertyByName("MyTexture")->getTexture()->getName() != "white.png")
 					Bind_Property_Material("M_ShadowPass", "Main_Texture", (*iter)->getMaterial().FindPropertyByName("MyTexture")->getTexture()->getName());
 				Pass* p = new Pass(&CurrentCamera);
 				p->setObject(&obj);
@@ -319,6 +326,7 @@ void Renderer::CreatePointLight(char * LightName, glm::vec3 pos)
 	P_light->setObject(obj_P_light);
 	Pass* p = AddPass();
 	p->setObject(obj_P_light);
+	AddObject(obj_P_light);
 	CurrentPointLight = P_light;
 	CurrentObject = obj_P_light;
 }
@@ -367,7 +375,7 @@ void Renderer::setPositionforObject(glm::vec3 position, char * ObjName)
 	bool IsFinded = false;
 	for (auto iter = ObjectArray.begin(); iter != ObjectArray.end(); iter++)
 	{
-		if ((*iter)->getName() == ObjName)
+		if (strcmp((*iter)->getName(), ObjName) == 0)
 		{	
 			IsFinded = true;
 			(*iter)->Setposition(position);
@@ -392,7 +400,7 @@ void Renderer::setRotationforObject(glm::vec3 rotation, char * ObjName)
 	bool IsFinded = false;
 	for (auto iter = ObjectArray.begin(); iter != ObjectArray.end(); iter++)
 	{
-		if ((*iter)->getName() == ObjName)
+		if (strcmp((*iter)->getName(), ObjName) == 0)
 		{
 			IsFinded = true;
 			(*iter)->Setrotation(rotation);
@@ -417,7 +425,7 @@ void Renderer::setScaleforObject(glm::vec3 scale, char * ObjName)
 	bool IsFinded = false;
 	for (auto iter = ObjectArray.begin(); iter != ObjectArray.end(); iter++)
 	{
-		if ((*iter)->getName() == ObjName)
+		if (strcmp((*iter)->getName(), ObjName) == 0)
 		{
 			IsFinded = true;
 			(*iter)->Setscale(scale);
@@ -451,7 +459,7 @@ void Renderer::BindMaterial2Object(char* MaterialName, Object * obj)
 {
 	bool Binded = false;
 	for (auto iter = MaterialArray.begin(); iter != MaterialArray.end(); iter++) {
-		if (iter->getName() == MaterialName) {
+		if (strcmp(iter->getName(), MaterialName) == 0) {
 			obj->bindMaterial(*iter);
 			Binded = true;
 		}
@@ -467,7 +475,7 @@ void Renderer::BindMaterial2CurrentObject(char * MaterialName)
 	if (CurrentObject == nullptr)
 		return;
 	for (auto iter = MaterialArray.begin(); iter != MaterialArray.end(); iter++) {
-		if (iter->getName() == MaterialName) {
+		if (strcmp(iter->getName(), MaterialName) == 0) {
 			CurrentObject->bindMaterial(*iter);
 			return;
 		}
@@ -481,7 +489,7 @@ void Renderer::BindMaterial2Object(char * MaterialName, char * objName)
 	bool FoundObj = false;
 	Object* obj = nullptr;
 	for (auto iter = ObjectArray.begin(); iter != ObjectArray.end(); iter++) {
-		if ((*iter)->getName() == objName) {
+		if (strcmp((*iter)->getName(), objName) == 0) {
 			obj = *iter;
 			FoundObj = true;
 		}
@@ -493,6 +501,26 @@ void Renderer::BindMaterial2Object(char * MaterialName, char * objName)
 	}
 	BindMaterial2Object(MaterialName, obj);
 	return;
+}
+
+void Renderer::switchtoNextObject()
+{
+	if (CurrentObject == nullptr)
+		return;
+	for (auto iter = ObjectArray.begin(); iter != ObjectArray.end(); iter++)
+	{
+		if (*iter == CurrentObject)
+			if (iter == ObjectArray.end() - 1)
+			{
+				CurrentObject = ObjectArray[1];
+				return;
+			}
+			else
+			{
+				CurrentObject = *(++iter);
+				return;
+			}
+	}
 }
 
 Pass * Renderer::AddPass()
@@ -580,7 +608,7 @@ void Renderer::Add_Property_Material(char * MaterialName, char * PropertyName, M
 {
 	bool IsFound = false;
 	for (auto iter = MaterialArray.begin(); iter != MaterialArray.end(); iter++) {
-		if (iter->getName() == MaterialName) {
+		if (strcmp(iter->getName(), MaterialName) == 0) {
 			if (iter->checkPropertyNoExist(PropertyName))
 			{
 				Texture* tex = FindTextureByName(DefaultValue);
@@ -604,7 +632,7 @@ void Renderer::Add_Property_Material(char * MaterialName, char * PropertyName, M
 {
 	bool IsFound = false;
 	for (auto iter = MaterialArray.begin(); iter != MaterialArray.end(); iter++) {
-		if (iter->getName() == MaterialName) {
+		if (strcmp(iter->getName(), MaterialName) == 0) {
 			if (iter->checkPropertyNoExist(PropertyName))
 			{			
 				M_Property* p = new M_Property(PropertyName, PropertyType, DefaultValue);
@@ -622,7 +650,7 @@ void Renderer::Add_Property_Material(char * MaterialName, char * PropertyName, M
 {
 	bool IsFound = false;
 	for (auto iter = MaterialArray.begin(); iter != MaterialArray.end(); iter++) {
-		if (iter->getName() == MaterialName) {
+		if (strcmp(iter->getName(), MaterialName) == 0) {
 			if (iter->checkPropertyNoExist(PropertyName))
 			{
 				M_Property* p = new M_Property(PropertyName, PropertyType, DefaultValue);
@@ -640,7 +668,7 @@ void Renderer::Add_Property_Material(char * MaterialName, char * PropertyName, M
 {
 	bool IsFound = false;
 	for (auto iter = MaterialArray.begin(); iter != MaterialArray.end(); iter++) {
-		if (iter->getName() == MaterialName) {
+		if (strcmp(iter->getName(), MaterialName) == 0) {
 			if (iter->checkPropertyNoExist(PropertyName))
 			{
 				M_Property* p = new M_Property(PropertyName, PropertyType, DefaultValue);
@@ -658,7 +686,7 @@ void Renderer::Bind_Property_Material(char * MaterialName, char * PropertyName, 
 {
 	bool IsFound = false;
 	for (auto iter = MaterialArray.begin(); iter != MaterialArray.end(); iter++) {
-		if (iter->getName() == MaterialName) {
+		if (strcmp(iter->getName(), MaterialName) == 0) {
 			M_Property* p = iter->FindPropertyByName(PropertyName);
 			Texture* tex = FindTextureByName(TexName);
 			if (p && tex)
@@ -704,10 +732,73 @@ void Renderer::Bind_Property_CurrentMaterial(char * PropertyName, char * TexName
 		return;	
 }
 
+void Renderer::Bind_Property_CurrentMaterial(char * PropertyName, glm::vec3 value)
+{
+	if (CurrentObject == nullptr)
+		return;
+
+	M_Property* p = CurrentObject->getMaterial().FindPropertyByName(PropertyName);
+	if (p)
+	{
+		if (p->getType() != M_vec3)
+		{
+			printf("Type is wrong");
+			return;
+		}
+		else
+			p->setVec3(value);
+		return;
+	}
+	else
+		return;
+}
+
+void Renderer::Bind_Property_CurrentMaterial(char * PropertyName, glm::vec2 value)
+{
+	if (CurrentObject == nullptr)
+		return;
+
+	M_Property* p = CurrentObject->getMaterial().FindPropertyByName(PropertyName);
+	if (p)
+	{
+		if (p->getType() != M_vec2)
+		{
+			printf("Type is wrong");
+			return;
+		}
+		else
+			p->setVec2(value);
+		return;
+	}
+	else
+		return;
+}
+
+void Renderer::Bind_Property_CurrentMaterial(char * PropertyName, float value)
+{
+	if (CurrentObject == nullptr)
+		return;
+
+	M_Property* p = CurrentObject->getMaterial().FindPropertyByName(PropertyName);
+	if (p)
+	{
+		if (p->getType() != M_float)
+		{
+			printf("Type is wrong");
+			return;
+		}
+		else
+			p->setFloat(value);
+		return;
+	}
+	else
+		return;
+}
+
 void Renderer::ToggleSkyboxforObject(char * objName)
 {
 	for (auto iter = ObjectArray.begin(); iter != ObjectArray.end(); iter++) {
-		if ((*iter)->getName() == objName) {
+		if (strcmp((*iter)->getName(), objName) == 0) {
 			(*iter)->toggleSkyBox();
 			return;
 		}

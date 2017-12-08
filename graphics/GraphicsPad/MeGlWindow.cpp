@@ -351,7 +351,7 @@ void MeGlWindow::installshaders()
 */
 void MeGlWindow::initializeGL()
 {
-	setMinimumSize(1440, 810);
+	setMinimumSize(1280, 720);
 	glewInit();
 	renderer()->init(width(),height());
 	UserInput();
@@ -746,9 +746,6 @@ void MeGlWindow::keyPressEvent(QKeyEvent* e)
 	case Qt::Key::Key_O:
 		if (PointLight* p = renderer()->getCurrentPLight())
 			p->Move_downward();
-		break;
-	case Qt::Key::Key_P:
-		renderer()->Bind_Property_Material("Zihao_DefaultMaterial", "MyTexture", "MyTexture");
 		break;
 	}
 	repaint();

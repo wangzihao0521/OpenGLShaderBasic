@@ -4,11 +4,10 @@ FunctionButton::FunctionButton(QString functionName, QString buttonText, int Arg
 {
 	QHBoxLayout* layout;
 	setLayout(layout = new QHBoxLayout);
-	layout->setAlignment(Qt::AlignAbsolute);
-	setMaximumWidth(500);
+	layout->setAlignment(Qt::AlignLeft);
+	setMaximumWidth(550);
 	layout->addWidget(label = new QLabel);
-	label->setMinimumWidth(35);
-	label->setMinimumWidth(5);
+	label->setMinimumWidth(100);
 	label->setAlignment(Qt::AlignCenter);
 	label->setText(functionName);
 	for (int i = 0; i < ArguementAmount; ++i)

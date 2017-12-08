@@ -14,6 +14,7 @@
     <ClCompile Include="FunctionButton_moc.cpp" />
     <ClCompile Include="GuiManager_moc.cpp" />
     <ClCompile Include="Gui_Property_Manager.cpp" />
+    <ClCompile Include="Gui_Property_Manager_moc.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MeGlWindow.h" />
@@ -52,5 +53,7 @@
     <None Include="PLight_FragmentShader.glsl" />
     <None Include="ShadowPassVertex.glsl" />
     <None Include="ShadowPassFragment.glsl" />
+    <None Include="VTest.glsl" />
+    <None Include="FTest.glsl" />
   </ItemGroup>
 </Project>

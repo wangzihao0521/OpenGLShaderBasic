@@ -66,6 +66,7 @@ public:
 	void BindMaterial2Object(char* MaterialName, Object* obj);
 	void BindMaterial2CurrentObject(char* MaterialName);
 	void  BindMaterial2Object(char* MaterialName, char* objName);
+	void switchtoNextObject();
 	Pass* AddPass();
 	Material CreateMaterial(char* Materialname, char* VshaderFileName = "Test_Vertexshader.glsl", char* FshaderFileName = "Test_Fragmentshader.glsl");
 	Mesh CompleteMeshWithGeo(Shapedata geometry);
@@ -78,6 +79,9 @@ public:
 	void Add_Property_Material(char* MaterialName, char* PropertyName, M_PropertyType PropertyType, float DefaultValue);
 	void Bind_Property_Material(char* MaterialName, char* PropertyName, char* TexName);
 	void Bind_Property_CurrentMaterial(char* PropertyName, char* TexName);
+	void Bind_Property_CurrentMaterial(char* PropertyName, glm::vec3 value);
+	void Bind_Property_CurrentMaterial(char* PropertyName, glm::vec2 value);
+	void Bind_Property_CurrentMaterial(char* PropertyName, float value);
 	void ToggleSkyboxforObject(char* objName);
 	Camera* getCurrentCamera() { return &CurrentCamera; }
 	Camera* getLightCamera() { return &LightCamera; }

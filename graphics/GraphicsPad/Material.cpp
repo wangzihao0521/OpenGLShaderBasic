@@ -41,7 +41,7 @@ M_Property * Material::FindPropertyByName(char * P_name)
 {
 	for (auto iter = PropertyArray.begin(); iter != PropertyArray.end(); ++iter)
 	{
-		if ((*iter)->getName() == P_name)
+		if (strcmp((*iter)->getName(),P_name) == 0)
 		{
 			return *iter;
 		}
@@ -140,6 +140,18 @@ void Material::AddAllPropertyUniform()
 		case M_Texture3D:
 		{
 			glUniform1i(UniformLocation, (*iter)->getTexture()->getBufferID());
+		}
+		case M_vec3:
+		{
+			glUniform3fv(UniformLocation,1, &(*iter)->getVec3()[0]);
+		}
+		case M_vec2:
+		{
+			glUniform2fv(UniformLocation, 1, &(*iter)->getVec2()[0]);
+		}
+		case M_float:
+		{
+			glUniform1f(UniformLocation,(*iter)->getFloat());
 		}
 		default:
 			break;

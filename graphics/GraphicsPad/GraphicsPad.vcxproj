@@ -156,6 +156,7 @@
     <ClCompile Include="GuiManager.cpp" />
     <ClCompile Include="GuiManager_moc.cpp" />
     <ClCompile Include="Gui_Property_Manager.cpp" />
+    <ClCompile Include="Gui_Property_Manager_moc.cpp" />
     <ClCompile Include="Mainer.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="MeGlWindow.cpp" />
@@ -189,6 +190,7 @@
     <None Include="CubeMapFragmentShader.glsl" />
     <None Include="CubeMapVertexShader.glsl" />
     <None Include="FragmentShader.glsl" />
+    <None Include="FTest.glsl" />
     <None Include="PlaneShadowFragmentShader.glsl" />
     <None Include="PlaneShadowVertexShader.glsl" />
     <None Include="PLight_FragmentShader.glsl" />
@@ -200,6 +202,7 @@
     <None Include="Test_Fragmentshader.glsl" />
     <None Include="Test_Vertexshader.glsl" />
     <None Include="VertexShader.glsl" />
+    <None Include="VTest.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

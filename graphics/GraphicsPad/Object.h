@@ -22,7 +22,7 @@ protected:
 	
 public:
 	Object(char* ObjName,Mesh mesh, Transform trans = Transform(),ObjectType t = Non_Light) :
-		name(ObjName),mesh(mesh), transform(trans),material(Material()),IsSkyBox(false),castShadow(true),receiveShadow(true),type(t){}
+		name(ObjName),mesh(mesh), transform(trans),material(Material()),IsSkyBox(false),castShadow(false),receiveShadow(false),type(t){}
 	void Setposition(glm::vec3 pos) { transform.setPosition(pos); }
 	void Setrotation(glm::vec3 rot) { transform.setRotation(rot); }
 	void Setscale(glm::vec3 scale) { transform.setScale(scale); }

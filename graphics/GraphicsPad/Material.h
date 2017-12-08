@@ -51,6 +51,9 @@ public:
 	glm::vec3 getVec3() const { return vec3; }
 	float getFloat() const { return Float; }
 	void setTexture(Texture* texture) { tex = texture; }
+	void setVec3(glm::vec3 value) { vec3 = value; }
+	void setVec2(glm::vec2 value) { vec2 = value; }
+	void setFloat(float value) { Float = value; }
 };
 
 class Material {

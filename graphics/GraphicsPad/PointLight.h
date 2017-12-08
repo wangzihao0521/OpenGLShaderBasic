@@ -13,6 +13,7 @@ public:
 		AttenuationFactor = 0.1;
 	}
 	void setObject (Object* obj) { Light_obj = obj; }
+	Object* getObject() const { return Light_obj; }
 	glm::vec3 getPosition() const { return Light_obj->getTransform().getPosition(); }
 	GLfloat getAttenuation() const { return AttenuationFactor; }
 	char* getName() const { return Light_obj->getName(); }
