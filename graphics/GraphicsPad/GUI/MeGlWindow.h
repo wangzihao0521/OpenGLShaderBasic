@@ -1,10 +1,13 @@
 #ifndef ME_GL_WINDOW
 #define ME_GL_WINDOW
-#include "Renderer.h"
+
+#include "Render/Renderer.h"
+#include "Core/Camera.h"
+
 #include <QtOpenGL\qglwidget>
+
 #include <string>
 #include <Qt\qtimer.h>
-#include <Camera.h>
 
 
 class MeGlWindow : public QGLWidget

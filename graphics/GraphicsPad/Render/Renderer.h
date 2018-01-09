@@ -1,11 +1,13 @@
 #pragma once
+
 #include "Pass.h"
-#include <ShapeFactory.h>
+#include "Shape\ShapeFactory.h"
 #include "Material.h"
-#include <glm\gtc\matrix_transform.hpp>
-#include <QtOpenGL\qglwidget>
 #include "PointLight.h"
 #include "FrameBuffer.h"
+
+#include <glm\gtc\matrix_transform.hpp>
+#include <QtOpenGL\qglwidget>
 
 
 class Renderer {
@@ -68,7 +70,7 @@ public:
 	void  BindMaterial2Object(char* MaterialName, char* objName);
 	void switchtoNextObject();
 	Pass* AddPass();
-	Material CreateMaterial(char* Materialname, char* VshaderFileName = "Test_Vertexshader.glsl", char* FshaderFileName = "Test_Fragmentshader.glsl");
+	Material CreateMaterial(char* Materialname, char* VshaderFileName = "Data/Shader/Test_Vertexshader.glsl", char* FshaderFileName = "Data/Shader/Test_Fragmentshader.glsl");
 	Mesh CompleteMeshWithGeo(Shapedata geometry);
 	void AddMesh(Mesh mesh);
 	void AddObject(Object* obj);

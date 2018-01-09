@@ -1,8 +1,10 @@
 #pragma once
+
 #include <string>
 #include <vector>
 #include <fstream>
 #include <iostream>
+
 #include "glm\glm.hpp"
 #include "ShaderInfo.h"
 #include "Texture.h"

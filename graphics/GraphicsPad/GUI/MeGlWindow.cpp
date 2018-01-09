@@ -1,10 +1,12 @@
 #include <gl\glew.h>
-#include <MeGlWindow.h>
-#include <Vertex.h>
 #include <glm\gtc\matrix_transform.hpp>
 #include <glm\glm.hpp>
 #include <QtGui\qkeyevent>
-#include <Camera.h>
+
+#include "MeGlWindow.h"
+#include "Core/Camera.h"
+#include "Render/Vertex.h"
+
 #include <iostream>
 #include <fstream>
 
@@ -33,7 +35,7 @@ Camera LightCamera;
 glm::vec3 LightPosition(0.0f, 2.5f, -5.0f);
 float RotationAngle = 0.0f;
 
-const char* MeGlWindow::TexFile[] = { "right.png","left.png","bottom.png","top.png","back.png","front.png" };
+const char* MeGlWindow::TexFile[] = { "Data/Texture/right.png","Data/Texture/left.png","Data/Texture/bottom.png","Data/Texture/top.png","Data/Texture/back.png","Data/Texture/front.png" };
 /*
 void MeGlWindow::senddatatoRenderer()
 {
@@ -47,7 +49,7 @@ void MeGlWindow::senddatatoRenderer()
 	Pass* pass = renderer()->AddPass();
 	Object* Cube = renderer()->CreateObject(CubeGeometry);
 	Cube->Setposition(glm::vec3(0.0, 0.0, -5.0));
-	renderer()->BindShader2Object("Test_Vertexshader.glsl","Test_Fragmentshader.glsl",Cube);
+	renderer()->BindShader2Object("Data/Shader/Test_Vertexshader.glsl","Data/Shader/Test_Fragmentshader.glsl",Cube);
 	pass->setObject(Cube);
 
 
@@ -99,7 +101,7 @@ void MeGlWindow::senddatatoRenderer()
 	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 15 * sizeof(float), (void*)(11 * sizeof(float)+ Cube.VertexBufferSize() + Cube.IndicesBufferSize()));
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferID);
 
-	const char* texName = "MyTexture.png";
+	const char* texName = "Data/Texture/MyTexture.png";
 	QImage texture = QGLWidget::convertToGLFormat(QImage(texName, "PNG"));
 
 	glActiveTexture(GL_TEXTURE0);
@@ -112,7 +114,7 @@ void MeGlWindow::senddatatoRenderer()
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	
 
-	const char* normalMapName = "Normal_map.png";
+	const char* normalMapName = "Data/Texture/Normal_map.png";
 	QImage Normalmap = QGLWidget::convertToGLFormat(QImage(normalMapName, "PNG"));
 
 	glActiveTexture(GL_TEXTURE1);
@@ -220,10 +222,10 @@ void MeGlWindow::installshaders()
 	GLuint FragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 
 	const GLchar* adapter[1];
-	std::string temp = ReadShaderCode("VertexShader.glsl");
+	std::string temp = ReadShaderCode("Data/Shader/VertexShader.glsl");
 	adapter[0] = temp.c_str();
 	glShaderSource(VertexShaderID, 1, adapter, 0);
-	temp = ReadShaderCode("FragmentShader.glsl");
+	temp = ReadShaderCode("Data/Shader/FragmentShader.glsl");
 	adapter[0] = temp.c_str();
 	glShaderSource(FragmentShaderID, 1, adapter, 0);
 
@@ -247,10 +249,10 @@ void MeGlWindow::installshaders()
 	VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
 	FragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 
-	temp = ReadShaderCode("CubeLightVertexShader.glsl");
+	temp = ReadShaderCode("Data/Shader/CubeLightVertexShader.glsl");
 	adapter[0] = temp.c_str();
 	glShaderSource(VertexShaderID, 1, adapter, 0);
-	temp = ReadShaderCode("CubeLightFragmentShader.glsl");
+	temp = ReadShaderCode("Data/Shader/CubeLightFragmentShader.glsl");
 	adapter[0] = temp.c_str();
 	glShaderSource(FragmentShaderID, 1, adapter, 0);
 
@@ -273,10 +275,10 @@ void MeGlWindow::installshaders()
 	VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
 	FragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 
-	temp = ReadShaderCode("CubeMapVertexShader.glsl");
+	temp = ReadShaderCode("Data/Shader/CubeMapVertexShader.glsl");
 	adapter[0] = temp.c_str();
 	glShaderSource(VertexShaderID, 1, adapter, 0);
-	temp = ReadShaderCode("CubeMapFragmentShader.glsl");
+	temp = ReadShaderCode("Data/Shader/CubeMapFragmentShader.glsl");
 	adapter[0] = temp.c_str();
 	glShaderSource(FragmentShaderID, 1, adapter, 0);
 
@@ -299,10 +301,10 @@ void MeGlWindow::installshaders()
 	VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
 	FragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 
-	temp = ReadShaderCode("ShadowMapVertexShader.glsl");
+	temp = ReadShaderCode("Data/Shader/ShadowMapVertexShader.glsl");
 	adapter[0] = temp.c_str();
 	glShaderSource(VertexShaderID, 1, adapter, 0);
-	temp = ReadShaderCode("ShadowMapFragmentShader.glsl");
+	temp = ReadShaderCode("Data/Shader/ShadowMapFragmentShader.glsl");
 	adapter[0] = temp.c_str();
 	glShaderSource(FragmentShaderID, 1, adapter, 0);
 
@@ -325,10 +327,10 @@ void MeGlWindow::installshaders()
 	VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
 	FragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 
-	temp = ReadShaderCode("PlaneShadowVertexShader.glsl");
+	temp = ReadShaderCode("Data/Shader/PlaneShadowVertexShader.glsl");
 	adapter[0] = temp.c_str();
 	glShaderSource(VertexShaderID, 1, adapter, 0);
-	temp = ReadShaderCode("PlaneShadowFragmentShader.glsl");
+	temp = ReadShaderCode("Data/Shader/PlaneShadowFragmentShader.glsl");
 	adapter[0] = temp.c_str();
 	glShaderSource(FragmentShaderID, 1, adapter, 0);
 
@@ -673,7 +675,7 @@ void MeGlWindow::UserInput()
 //	renderer()->CreatePlaneInScene("Plane1");
 //	renderer()->setPositionforObject(glm::vec3(0, -2, -5), "Plane1");
 //	renderer()->CreatePointLight("PL1", glm::vec3(0.0f, 3.0f, -5.0f));
-//	renderer()->ImportTexture("MyTexture.png");
+//	renderer()->ImportTexture("Data/Texture/MyTexture.png");
 	
 }
 

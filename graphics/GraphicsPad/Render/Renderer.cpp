@@ -1,5 +1,7 @@
-#include "Renderer.h"
+
 #include "GL\glew.h"
+
+#include "Renderer.h"
 #include "PointLight.h"
 
 #include <unordered_map>
@@ -89,7 +91,7 @@ void Renderer::init_Pointlight()
 void Renderer::init_SkyBox()
 {
 	CreateCubeInScene("SkyBox");
-	CreateMaterial("SkyBox_Material", "CubeMapVertexShader.glsl", "CubeMapFragmentShader.glsl");
+	CreateMaterial("SkyBox_Material", "Data/Shader/CubeMapVertexShader.glsl", "Data/Shader/CubeMapFragmentShader.glsl");
 	Add_Property_Material("SkyBox_Material", "CubeMap", M_Texture3D, "SkyBox");
 	BindMaterial2Object("SkyBox_Material", "SkyBox");
 	setScaleforObject(glm::vec3(50, 50, 50),"SkyBox");
@@ -102,9 +104,9 @@ void Renderer::init_ShadowFrameBuffer()
 	ShadowFrameBuffer.init(i,ScreenWidth,ScreenHeight);
 	PushTexture2Array(ShadowFrameBuffer.ColorTexture);
 	PushTexture2Array(ShadowFrameBuffer.DepthTexture);
-	CreateMaterial("M_ShadowPass", "ShadowPassVertex.glsl", "ShadowPassFragment.glsl");
+	CreateMaterial("M_ShadowPass", "Data/Shader/ShadowPassVertex.glsl", "Data/Shader/ShadowPassFragment.glsl");
 	Add_Property_Material("M_ShadowPass", "ShadowMap", M_Texture2D, ShadowFrameBuffer.DepthTexture->getName());
-	Add_Property_Material("M_ShadowPass", "Main_Texture", M_Texture2D, "white");
+	Add_Property_Material("M_ShadowPass", "Main_Texture", M_Texture2D, "Data/Texture/white.png");
 
 }
 
@@ -189,18 +191,18 @@ void Renderer::init(GLsizei width, GLsizei height)
 	glViewport(0, 0, width, height);
 
 	//import default texture
-	ImportTexture("white.png");
-	ImportTexture("black.png");
-	ImportTexture("Normal_map.png");
-	Import3DTexture("SkyBox", "right.png", "left.png", "bottom.png", "top.png", "back.png", "front.png");
+	ImportTexture("Data/Texture/white.png");
+	ImportTexture("Data/Texture/black.png");
+	ImportTexture("Data/Texture/Normal_map.png");
+	Import3DTexture("SkyBox", "Data/Texture/right.png", "Data/Texture/left.png", "Data/Texture/bottom.png", "Data/Texture/top.png", "Data/Texture/back.png", "Data/Texture/front.png");
 
 	//Every obj created in scene uses default material first
 	CreateMaterial("Zihao_DefaultMaterial");
-	Add_Property_Material("Zihao_DefaultMaterial","MyTexture",M_Texture2D,"white" );
-	Add_Property_Material("Zihao_DefaultMaterial", "NormalMap", M_Texture2D,"Normal_map.png");
+	Add_Property_Material("Zihao_DefaultMaterial","MyTexture",M_Texture2D,"Data/Texture/white.png" );
+	Add_Property_Material("Zihao_DefaultMaterial", "NormalMap", M_Texture2D,"Data/Texture/Normal_map.png");
 
 	//Every Point Light created in scene use the same default light material 
-	CreateMaterial("Zihao_PLightDefaultMaterial","PLight_VertexShader.glsl","PLight_FragmentShader.glsl");
+	CreateMaterial("Zihao_PLightDefaultMaterial","Data/Shader/PLight_VertexShader.glsl","Data/Shader/PLight_FragmentShader.glsl");
 
 	//init skybox
 	init_SkyBox();
@@ -214,7 +216,7 @@ void Renderer::init(GLsizei width, GLsizei height)
 
 	//point light object initialize
 	init_Pointlight();
-//	bindShader2Material("DefaultMaterial", "Test_Vertexshader.glsl", "Test_Fragmentshader.glsl"); //todo
+//	bindShader2Material("DefaultMaterial", "Data/Shader/Test_Vertexshader.glsl", "Data/Shader/Test_Fragmentshader.glsl"); //todo
 
 
 }
@@ -279,8 +281,8 @@ void Renderer::RenderScene()
 				Object obj = **iter;
 				obj.bindMaterial(mat);
 				if ((*iter)->getMaterial().FindPropertyByName("MyTexture") == nullptr)
-					Bind_Property_Material("M_ShadowPass", "Main_Texture", "white.png");
-				else if ((*iter)->getMaterial().FindPropertyByName("MyTexture")->getTexture()->getName() != "white.png")
+					Bind_Property_Material("M_ShadowPass", "Main_Texture", "Data/Texture/white.png");
+				else if ((*iter)->getMaterial().FindPropertyByName("MyTexture")->getTexture()->getName() != "Data/Texture/white.png")
 					Bind_Property_Material("M_ShadowPass", "Main_Texture", (*iter)->getMaterial().FindPropertyByName("MyTexture")->getTexture()->getName());
 				Pass* p = new Pass(&CurrentCamera);
 				p->setObject(&obj);

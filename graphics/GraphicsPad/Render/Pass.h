@@ -1,6 +1,7 @@
 #pragma once
-#include "Object.h"
-#include "Camera.h"
+
+#include "Core\Object.h"
+#include "Core\Camera.h"
 
 class Pass {
 protected:

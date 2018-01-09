@@ -1,6 +1,6 @@
-#ifndef ZIHAO_TEXTURE
-#define ZIHAO_TEXTURE
+#pragma once
 
+#include <glm/glm.hpp>
 
 class Texture {
 protected:
@@ -15,6 +15,3 @@ public:
 	GLuint getBufferID() const { return BufferID; }
 	GLuint getTextureID() { return TextureID; }
 };
-
-
-#endif 

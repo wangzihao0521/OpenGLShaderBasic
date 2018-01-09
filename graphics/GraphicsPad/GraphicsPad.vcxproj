@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -18,36 +18,105 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Core\Camera.cpp" />
+    <ClCompile Include="Core\Object.cpp" />
+    <ClCompile Include="GUI\FunctionButton.cpp" />
+    <ClCompile Include="GUI\FunctionButton_moc.cpp" />
+    <ClCompile Include="GUI\GuiManager.cpp" />
+    <ClCompile Include="GUI\GuiManager_moc.cpp" />
+    <ClCompile Include="GUI\Gui_Property_Manager.cpp" />
+    <ClCompile Include="GUI\Gui_Property_Manager_moc.cpp" />
+    <ClCompile Include="GUI\MeGlWindow.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Render\FrameBuffer.cpp" />
+    <ClCompile Include="Render\Material.cpp" />
+    <ClCompile Include="Render\Pass.cpp" />
+    <ClCompile Include="Render\Renderer.cpp" />
+    <ClCompile Include="Shape\ShapeFactory.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Core\Camera.h" />
+    <ClInclude Include="Core\Object.h" />
+    <ClInclude Include="Core\Transform.h" />
+    <ClInclude Include="GUI\FunctionButton.h" />
+    <ClInclude Include="GUI\GuiManager.h" />
+    <ClInclude Include="GUI\Gui_Property_Manager.h" />
+    <ClInclude Include="GUI\MeGlWindow.h" />
+    <ClInclude Include="Render\FrameBuffer.h" />
+    <ClInclude Include="Render\Material.h" />
+    <ClInclude Include="Render\Mesh.h" />
+    <ClInclude Include="Render\Pass.h" />
+    <ClInclude Include="Render\PointLight.h" />
+    <ClInclude Include="Render\Renderer.h" />
+    <ClInclude Include="Render\ShaderInfo.h" />
+    <ClInclude Include="Render\Texture.h" />
+    <ClInclude Include="Render\Vertex.h" />
+    <ClInclude Include="Shape\ShapeData.h" />
+    <ClInclude Include="Shape\ShapeFactory.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Data\Shader\CubeLightFragmentShader.glsl" />
+    <None Include="Data\Shader\CubeLightVertexShader.glsl" />
+    <None Include="Data\Shader\CubeMapFragmentShader.glsl" />
+    <None Include="Data\Shader\CubeMapVertexShader.glsl" />
+    <None Include="Data\Shader\FragmentShader.glsl" />
+    <None Include="Data\Shader\FTest.glsl" />
+    <None Include="Data\Shader\PlaneShadowFragmentShader.glsl" />
+    <None Include="Data\Shader\PlaneShadowVertexShader.glsl" />
+    <None Include="Data\Shader\PLight_FragmentShader.glsl" />
+    <None Include="Data\Shader\PLight_VertexShader.glsl" />
+    <None Include="Data\Shader\ShadowMapFragmentShader.glsl" />
+    <None Include="Data\Shader\ShadowMapVertexShader.glsl" />
+    <None Include="Data\Shader\ShadowPassFragment.glsl" />
+    <None Include="Data\Shader\ShadowPassVertex.glsl" />
+    <None Include="Data\Shader\Test_Fragmentshader.glsl" />
+    <None Include="Data\Shader\Test_Vertexshader.glsl" />
+    <None Include="Data\Shader\VertexShader.glsl" />
+    <None Include="Data\Shader\VTest.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Data\Texture\back.png" />
+    <Image Include="Data\Texture\black.png" />
+    <Image Include="Data\Texture\bottom.png" />
+    <Image Include="Data\Texture\front.png" />
+    <Image Include="Data\Texture\left.png" />
+    <Image Include="Data\Texture\MyTexture.png" />
+    <Image Include="Data\Texture\Normal_map.png" />
+    <Image Include="Data\Texture\right.png" />
+    <Image Include="Data\Texture\top.png" />
+    <Image Include="Data\Texture\white.png" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{B6FB7788-CF97-429B-9B12-6AC9DD6C24D5}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>GraphicsPad</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -71,13 +140,14 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IntDir>$(Configuration)\Tmp\</IntDir>
+    <IntDir>.intermediate\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <IntDir>.intermediate\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -148,62 +218,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="FrameBuffer.cpp" />
-    <ClCompile Include="FunctionButton.cpp" />
-    <ClCompile Include="FunctionButton_moc.cpp" />
-    <ClCompile Include="GuiManager.cpp" />
-    <ClCompile Include="GuiManager_moc.cpp" />
-    <ClCompile Include="Gui_Property_Manager.cpp" />
-    <ClCompile Include="Gui_Property_Manager_moc.cpp" />
-    <ClCompile Include="Mainer.cpp" />
-    <ClCompile Include="Material.cpp" />
-    <ClCompile Include="MeGlWindow.cpp" />
-    <ClCompile Include="Pass.cpp" />
-    <ClCompile Include="Renderer.cpp" />
-    <ClCompile Include="ShapeFactory.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Camera.h" />
-    <ClInclude Include="FrameBuffer.h" />
-    <ClInclude Include="FunctionButton.h" />
-    <ClInclude Include="GuiManager.h" />
-    <ClInclude Include="Gui_Property_Manager.h" />
-    <ClInclude Include="Material.h" />
-    <ClInclude Include="MeGlWindow.h" />
-    <ClInclude Include="Mesh.h" />
-    <ClInclude Include="Object.h" />
-    <ClInclude Include="Pass.h" />
-    <ClInclude Include="PointLight.h" />
-    <ClInclude Include="Renderer.h" />
-    <ClInclude Include="ShaderInfo.h" />
-    <ClInclude Include="ShapeData.h" />
-    <ClInclude Include="ShapeFactory.h" />
-    <ClInclude Include="Texture.h" />
-    <ClInclude Include="Transform.h" />
-    <ClInclude Include="Vertex.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="CubeLightFragmentShader.glsl" />
-    <None Include="CubeLightVertexShader.glsl" />
-    <None Include="CubeMapFragmentShader.glsl" />
-    <None Include="CubeMapVertexShader.glsl" />
-    <None Include="FragmentShader.glsl" />
-    <None Include="FTest.glsl" />
-    <None Include="PlaneShadowFragmentShader.glsl" />
-    <None Include="PlaneShadowVertexShader.glsl" />
-    <None Include="PLight_FragmentShader.glsl" />
-    <None Include="PLight_VertexShader.glsl" />
-    <None Include="ShadowMapFragmentShader.glsl" />
-    <None Include="ShadowMapVertexShader.glsl" />
-    <None Include="ShadowPassFragment.glsl" />
-    <None Include="ShadowPassVertex.glsl" />
-    <None Include="Test_Fragmentshader.glsl" />
-    <None Include="Test_Vertexshader.glsl" />
-    <None Include="VertexShader.glsl" />
-    <None Include="VTest.glsl" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

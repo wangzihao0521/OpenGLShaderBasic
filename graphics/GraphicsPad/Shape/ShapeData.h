@@ -1,6 +1,7 @@
 #pragma once
+
 #include <GL\glew.h>
-#include <Vertex.h>
+#include "Render\Vertex.h"
 
 class Shapedata
 {
@@ -37,7 +38,7 @@ public:
 	{
 		if (numVertices == geometry.numVertices && numIndices == geometry.numIndices)
 		{
-			for (int i = 0; i < numVertices; ++i)
+			for (unsigned int i = 0; i < numVertices; ++i)
 			{
 				if (vertices[i] == geometry.vertices[i])
 				{
@@ -45,7 +46,7 @@ public:
 				else
 					return false;
 			}
-			for (int i = 0; i < numIndices; ++i)
+			for (unsigned int i = 0; i < numIndices; ++i)
 			{
 				if (Indices[i] == geometry.Indices[i])
 				{

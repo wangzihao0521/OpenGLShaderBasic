@@ -1,59 +1,218 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="Mainer.cpp" />
-    <ClCompile Include="MeGlWindow.cpp" />
-    <ClCompile Include="ShapeFactory.cpp" />
-    <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="Renderer.cpp" />
-    <ClCompile Include="Pass.cpp" />
-    <ClCompile Include="Material.cpp" />
-    <ClCompile Include="FrameBuffer.cpp" />
-    <ClCompile Include="GuiManager.cpp" />
-    <ClCompile Include="FunctionButton.cpp" />
-    <ClCompile Include="FunctionButton_moc.cpp" />
-    <ClCompile Include="GuiManager_moc.cpp" />
-    <ClCompile Include="Gui_Property_Manager.cpp" />
-    <ClCompile Include="Gui_Property_Manager_moc.cpp" />
+    <Filter Include="Core">
+      <UniqueIdentifier>{6fd1498c-de34-4a01-a9bc-1291ec474c98}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data">
+      <UniqueIdentifier>{42ef37b0-f847-40e8-8709-8b6e67053823}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Texture">
+      <UniqueIdentifier>{3d07efe6-1f25-429f-9f53-f3b1492eeac8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Shader">
+      <UniqueIdentifier>{09770675-70fd-4001-8e9b-607b16e0aca6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GUI">
+      <UniqueIdentifier>{a47a1f13-d009-4237-9d2a-1fbd19c00f75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render">
+      <UniqueIdentifier>{e3584d54-1406-45fb-9da4-c37aad12f771}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shape">
+      <UniqueIdentifier>{d2acd90b-660e-48dc-9d4e-4dbf953e4ad9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Support">
+      <UniqueIdentifier>{cd01a02d-5021-411b-971b-e76eae06ad91}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="MeGlWindow.h" />
-    <ClInclude Include="Vertex.h" />
-    <ClInclude Include="ShapeData.h" />
-    <ClInclude Include="ShapeFactory.h" />
-    <ClInclude Include="Camera.h" />
-    <ClInclude Include="Renderer.h" />
-    <ClInclude Include="Pass.h" />
-    <ClInclude Include="Object.h" />
-    <ClInclude Include="ShaderInfo.h" />
-    <ClInclude Include="Material.h" />
-    <ClInclude Include="Mesh.h" />
-    <ClInclude Include="Transform.h" />
-    <ClInclude Include="PointLight.h" />
-    <ClInclude Include="Texture.h" />
-    <ClInclude Include="FrameBuffer.h" />
-    <ClInclude Include="GuiManager.h" />
-    <ClInclude Include="FunctionButton.h" />
-    <ClInclude Include="Gui_Property_Manager.h" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Core\Camera.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Object.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\FunctionButton.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\FunctionButton_moc.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Gui_Property_Manager.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Gui_Property_Manager_moc.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\GuiManager.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\GuiManager_moc.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\MeGlWindow.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Shape\ShapeFactory.cpp">
+      <Filter>Shape</Filter>
+    </ClCompile>
+    <ClCompile Include="Render\FrameBuffer.cpp">
+      <Filter>Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Render\Material.cpp">
+      <Filter>Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Render\Pass.cpp">
+      <Filter>Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Render\Renderer.cpp">
+      <Filter>Render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="VertexShader.glsl" />
-    <None Include="FragmentShader.glsl" />
-    <None Include="CubeLightVertexShader.glsl" />
-    <None Include="CubeLightFragmentShader.glsl" />
-    <None Include="CubeMapFragmentShader.glsl" />
-    <None Include="CubeMapVertexShader.glsl" />
-    <None Include="ShadowMapVertexShader.glsl" />
-    <None Include="ShadowMapFragmentShader.glsl" />
-    <None Include="PlaneShadowVertexShader.glsl" />
-    <None Include="PlaneShadowFragmentShader.glsl" />
-    <None Include="Test_Fragmentshader.glsl" />
-    <None Include="Test_Vertexshader.glsl" />
-    <None Include="PLight_VertexShader.glsl" />
-    <None Include="PLight_FragmentShader.glsl" />
-    <None Include="ShadowPassVertex.glsl" />
-    <None Include="ShadowPassFragment.glsl" />
-    <None Include="VTest.glsl" />
-    <None Include="FTest.glsl" />
+    <ClInclude Include="Core\Camera.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Object.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Transform.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\FunctionButton.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\Gui_Property_Manager.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\GuiManager.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\MeGlWindow.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Shape\ShapeData.h">
+      <Filter>Shape</Filter>
+    </ClInclude>
+    <ClInclude Include="Shape\ShapeFactory.h">
+      <Filter>Shape</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\FrameBuffer.h">
+      <Filter>Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\Material.h">
+      <Filter>Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\Mesh.h">
+      <Filter>Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\Pass.h">
+      <Filter>Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\PointLight.h">
+      <Filter>Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\Renderer.h">
+      <Filter>Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\ShaderInfo.h">
+      <Filter>Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\Texture.h">
+      <Filter>Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\Vertex.h">
+      <Filter>Render</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Data\Shader\CubeLightFragmentShader.glsl">
+      <Filter>Data\Shader</Filter>
+    </None>
+    <None Include="Data\Shader\CubeLightVertexShader.glsl">
+      <Filter>Data\Shader</Filter>
+    </None>
+    <None Include="Data\Shader\CubeMapFragmentShader.glsl">
+      <Filter>Data\Shader</Filter>
+    </None>
+    <None Include="Data\Shader\CubeMapVertexShader.glsl">
+      <Filter>Data\Shader</Filter>
+    </None>
+    <None Include="Data\Shader\FragmentShader.glsl">
+      <Filter>Data\Shader</Filter>
+    </None>
+    <None Include="Data\Shader\FTest.glsl">
+      <Filter>Data\Shader</Filter>
+    </None>
+    <None Include="Data\Shader\PlaneShadowFragmentShader.glsl">
+      <Filter>Data\Shader</Filter>
+    </None>
+    <None Include="Data\Shader\PlaneShadowVertexShader.glsl">
+      <Filter>Data\Shader</Filter>
+    </None>
+    <None Include="Data\Shader\PLight_FragmentShader.glsl">
+      <Filter>Data\Shader</Filter>
+    </None>
+    <None Include="Data\Shader\PLight_VertexShader.glsl">
+      <Filter>Data\Shader</Filter>
+    </None>
+    <None Include="Data\Shader\ShadowMapFragmentShader.glsl">
+      <Filter>Data\Shader</Filter>
+    </None>
+    <None Include="Data\Shader\ShadowMapVertexShader.glsl">
+      <Filter>Data\Shader</Filter>
+    </None>
+    <None Include="Data\Shader\ShadowPassFragment.glsl">
+      <Filter>Data\Shader</Filter>
+    </None>
+    <None Include="Data\Shader\ShadowPassVertex.glsl">
+      <Filter>Data\Shader</Filter>
+    </None>
+    <None Include="Data\Shader\Test_Fragmentshader.glsl">
+      <Filter>Data\Shader</Filter>
+    </None>
+    <None Include="Data\Shader\Test_Vertexshader.glsl">
+      <Filter>Data\Shader</Filter>
+    </None>
+    <None Include="Data\Shader\VertexShader.glsl">
+      <Filter>Data\Shader</Filter>
+    </None>
+    <None Include="Data\Shader\VTest.glsl">
+      <Filter>Data\Shader</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Data\Texture\back.png">
+      <Filter>Data\Texture</Filter>
+    </Image>
+    <Image Include="Data\Texture\black.png">
+      <Filter>Data\Texture</Filter>
+    </Image>
+    <Image Include="Data\Texture\bottom.png">
+      <Filter>Data\Texture</Filter>
+    </Image>
+    <Image Include="Data\Texture\front.png">
+      <Filter>Data\Texture</Filter>
+    </Image>
+    <Image Include="Data\Texture\left.png">
+      <Filter>Data\Texture</Filter>
+    </Image>
+    <Image Include="Data\Texture\MyTexture.png">
+      <Filter>Data\Texture</Filter>
+    </Image>
+    <Image Include="Data\Texture\Normal_map.png">
+      <Filter>Data\Texture</Filter>
+    </Image>
+    <Image Include="Data\Texture\right.png">
+      <Filter>Data\Texture</Filter>
+    </Image>
+    <Image Include="Data\Texture\top.png">
+      <Filter>Data\Texture</Filter>
+    </Image>
+    <Image Include="Data\Texture\white.png">
+      <Filter>Data\Texture</Filter>
+    </Image>
   </ItemGroup>
 </Project>
