@@ -1,6 +1,7 @@
-#include <ShapeFactory.h>
+#include "ShapeFactory.h"
+
 #include <glm\glm.hpp>
-#include <Vertex.h>
+#include "Render\Vertex.h"
 
 #define NUM_ELEMENT(x) sizeof(x)/sizeof(*x)
 

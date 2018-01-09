@@ -1,4 +1,5 @@
 #pragma once
+
 #include <unordered_map>
 #include "Gui_Property_Manager.h"
 
@@ -14,8 +15,8 @@ protected:
 	FunctionButton* CreatePlane = new FunctionButton("CreatePlaneInScene");
 	FunctionButton* CreatePointLight = new FunctionButton("CreatePointLightInScene");
 	FunctionButton* FB_ImportTexture = new FunctionButton("ImportTexture");
-	FunctionButton* CreateMaterial = new FunctionButton("CreateMaterial", "do it", 3);
-	FunctionButton* AddProperty_Material = new FunctionButton("AddProperty2Mat", "do it", 4);
+	FunctionButton* CreateMaterial = new FunctionButton("CreateMaterial", "Do it", 3);
+	FunctionButton* AddProperty_Material = new FunctionButton("AddProperty2Mat", "Do it", 4);
 
 private:
 	void SetAllConnections();

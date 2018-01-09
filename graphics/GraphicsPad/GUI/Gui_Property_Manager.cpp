@@ -42,7 +42,7 @@ void Gui_Property_Manager::setValueForAllWidget(Object* obj)
 	MaterialLabel = new QLabel("material");
 	matName = new QLabel(obj->getMaterial().getName());
 	BindMaterial = new FunctionButton("BindMaterial");
-	BindProperty = new FunctionButton("BindProperty", "do it", 2);
+	BindProperty = new FunctionButton("BindProperty", "Do it", 2);
 	CastShadowLabel = new QLabel("Cast Shadow");
 	ReceiveShadowLabel = new QLabel("Receive Shadow");
 	IsCastShadow = new QCheckBox();

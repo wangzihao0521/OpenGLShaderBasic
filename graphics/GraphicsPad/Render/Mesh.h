@@ -1,6 +1,7 @@
 #pragma once
+
 #include "GL\glew.h"
-#include "ShapeData.h"
+#include "Shape\ShapeData.h"
 
 struct Mesh{
 	Shapedata geometry;

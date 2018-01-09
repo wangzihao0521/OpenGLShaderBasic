@@ -1,8 +1,11 @@
 #pragma once
+
 #include <QtGui\qwidget.h>
-#include <MeGlWindow.h>
-#include "FunctionButton.h"
 #include <QtGui\qcheckbox.h>
+
+#include "MeGlWindow.h"
+#include "FunctionButton.h"
+
 #include <sstream>
 
 
@@ -33,7 +36,7 @@ protected:
 	FunctionButton* Rotation = new FunctionButton("rotation", "change", 3);
 	FunctionButton* Scale = new FunctionButton("scale", "change", 3);
 	FunctionButton* BindMaterial = new FunctionButton("BindMaterial");
-	FunctionButton* BindProperty = new FunctionButton("BindProperty", "do it", 2);
+	FunctionButton* BindProperty = new FunctionButton("BindProperty", "Do it", 2);
 	QPushButton* SwitchNext = new QPushButton;
 	QCheckBox* IsCastShadow = new QCheckBox;
 	QCheckBox* IsReceiveShadow = new QCheckBox;

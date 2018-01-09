@@ -1,5 +1,6 @@
 #pragma once
-#include "Object.h"
+
+#include "Core\Object.h"
 
 
 class PointLight {
@@ -10,7 +11,7 @@ protected:
 public:
 	PointLight() { 
 		Light_obj = nullptr; 
-		AttenuationFactor = 0.1;
+		AttenuationFactor = 0.1f;
 	}
 	void setObject (Object* obj) { Light_obj = obj; }
 	Object* getObject() const { return Light_obj; }

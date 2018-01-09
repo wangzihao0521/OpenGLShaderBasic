@@ -1,4 +1,5 @@
 #include "GuiManager.h"
+
 #include <QtGui\qvboxlayout>
 #include <QtGui\qhboxlayout>
 
